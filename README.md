@@ -1,5 +1,6 @@
 # Pore Network Analysis Pipeline for Electrospun Scaffolds
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20308262.svg)](https://doi.org/10.5281/zenodo.20308262)
 [![Preprint](https://img.shields.io/badge/Preprint-SSRN-orange)](https://dx.doi.org/10.2139/ssrn.6664677)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
@@ -273,7 +274,7 @@ Loads the saved SNOW2 output (seconds), builds the network model, applies filter
 Isolated pore clusters cannot support cell migration and are not functionally relevant to transmural scaffold growth. Their removal is consistent with biological interpretations of angio-permissive porosity as described in the associated publication.
 
 Include in your methods:
-> *"Following network extraction, only the largest percolating pore cluster was retained, as isolated clusters do not contribute to transmural cell migration pathways [Tonelli et al., 2025, doi:10.2139/ssrn.6664677]."*
+> *"Following network extraction, only the largest percolating pore cluster was retained, as isolated clusters do not contribute to transmural cell migration pathways [Tonelli et al., 2025, doi:10.2139/ssrn.6664677]. Analysis code is available at https://github.com/andtoni/growth-tunnel-analysis (doi:10.5281/zenodo.20308262)."*
 
 ---
 
@@ -370,7 +371,7 @@ tnland001@myuct.ac.za
 ORCID: [0000-0002-1601-4103](https://orcid.org/0000-0002-1601-4103)
 GitHub: [@andtoni](https://github.com/andtoni)
 
-For questions about adapting this pipeline to other porous materials or imaging modalities, please open a [GitHub issue](https://github.com/andtoni/pore-network-analysis/issues).
+For questions about adapting this pipeline to other porous materials or imaging modalities, please open a [GitHub issue](https://github.com/andtoni/growth-tunnel-analysis/issues).
 
 ---
 
