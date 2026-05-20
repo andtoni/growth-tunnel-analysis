@@ -1,0 +1,31 @@
+# Pore Network Analysis Pipeline — Python Dependencies
+# Author: Andrea Tonelli — University of Cape Town — 2025
+# Repository: https://github.com/andtoni/pore-network-analysis
+#
+# Install with:
+#   uv pip install -r requirements.txt
+#
+# Tested on: Python 3.12, Windows 11 (64-bit)
+#
+# Third-party licences:
+#   porespy     MIT  — Gostick et al. (2019) doi:10.21105/joss.01296
+#   openpnm     MIT  — Gostick et al. (2016) doi:10.1109/MCSE.2016.49
+#   numpy       BSD-3-Clause
+#   scipy       BSD-3-Clause
+#   scikit-image  BSD-3-Clause
+#   matplotlib  PSF (permissive)
+#   imageio     BSD-2-Clause
+#   pandas      BSD-3-Clause
+#   tqdm        MIT/MPLv2
+#   pypardiso   MIT (optional — speeds up OpenPNM solver)
+
+porespy==2.2.0
+openpnm==3.3.0
+numpy==1.26.4
+scipy==1.13.1
+scikit-image==0.22.0
+matplotlib==3.9.0
+imageio==2.34.0
+pandas==2.2.0
+tqdm==4.66.0
+pypardiso==0.4.6

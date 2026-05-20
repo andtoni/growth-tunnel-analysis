@@ -1,0 +1,64 @@
+MIT License
+
+Copyright (c) 2025 Andrea Tonelli, University of Cape Town
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-------------------------------------------------------------------------------
+THIRD-PARTY SOFTWARE NOTICES
+
+This software uses the following third-party packages, each distributed under
+their own licence. All are permissive open-source licences compatible with MIT.
+
+PoreSpy (MIT Licence)
+  Copyright (c) PMEAL, University of Waterloo
+  https://github.com/PMEAL/porespy
+  Citation: Gostick J, et al. (2019). PoreSpy: A Python Toolkit for
+  Quantitative Analysis of Porous Media Images. Journal of Open Source
+  Software. doi:10.21105/joss.01296
+
+OpenPNM (MIT Licence)
+  Copyright (c) PMEAL, University of Waterloo
+  https://github.com/PMEAL/OpenPNM
+  Citation: Gostick J, et al. (2016). OpenPNM: A Pore Network Modeling
+  Package. Computing in Science & Engineering. doi:10.1109/MCSE.2016.49
+
+NumPy (BSD 3-Clause Licence)
+  https://numpy.org
+
+SciPy (BSD 3-Clause Licence)
+  https://scipy.org
+
+scikit-image (BSD 3-Clause Licence)
+  https://scikit-image.org
+
+Matplotlib (PSF Licence — permissive, compatible with MIT)
+  https://matplotlib.org
+
+imageio (BSD 2-Clause Licence)
+  https://imageio.readthedocs.io
+
+pandas (BSD 3-Clause Licence)
+  https://pandas.pydata.org
+
+ParaView (BSD 3-Clause Licence)
+  https://www.paraview.org
+
+Full licence texts for each dependency are available in their respective
+GitHub repositories.

@@ -1,0 +1,104 @@
+cff-version: 1.2.0
+message: "If you use this software in your research, please cite it as below."
+authors:
+  - family-names: "Tonelli"
+    given-names: "Andrea"
+    orcid: "https://orcid.org/0000-0002-1601-4103"
+    affiliation: "University of Cape Town"
+    email: "tnland001@myuct.ac.za"
+title: "Pore Network Analysis Pipeline for Electrospun Scaffolds"
+version: 1.0.0
+date-released: 2025-05-20
+url: "https://github.com/andtoni/pore-network-analysis"
+license: MIT
+repository-code: "https://github.com/andtoni/pore-network-analysis"
+abstract: >
+  A Python pipeline for extracting and analysing pore networks from micro-CT
+  scans of electrospun scaffolds. Uses PoreSpy and OpenPNM for SNOW2-based
+  pore network extraction, minimum inscribed diameter threshold sensitivity
+  analysis, largest connected cluster isolation, and automated ParaView batch
+  visualisation. Outputs are compatible with GraphPad Prism for statistical
+  analysis. Developed for the study of angio-permissive scaffold porosity in
+  electrospun tissue engineering constructs.
+keywords:
+  - pore network modelling
+  - electrospun scaffolds
+  - micro-CT analysis
+  - tissue engineering
+  - angiogenesis
+  - scaffold porosity
+  - PoreSpy
+  - OpenPNM
+  - ParaView
+  - SNOW2 algorithm
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "Tonelli"
+      given-names: "Andrea"
+      orcid: "https://orcid.org/0000-0002-1601-4103"
+      affiliation: "University of Cape Town"
+  title: "In vivo validation of multimodality pore-network modelling to identify angio-permissive scaffold porosity"
+  year: 2025
+  url: "https://dx.doi.org/10.2139/ssrn.6664677"
+  doi: "10.2139/ssrn.6664677"
+  notes: "Preprint available via SSRN"
+references:
+  - type: article
+    authors:
+      - family-names: "Gostick"
+        given-names: "Jeff"
+      - family-names: "Khan"
+        given-names: "Zohaib A."
+      - family-names: "Tranter"
+        given-names: "Thomas G."
+      - family-names: "Kok"
+        given-names: "Matthew D. R."
+      - family-names: "Agnaou"
+        given-names: "Mehrez"
+      - family-names: "Sadeghi"
+        given-names: "Mohammad A."
+      - family-names: "Jervis"
+        given-names: "Rhodri"
+    title: "PoreSpy: A Python Toolkit for Quantitative Analysis of Porous Media Images"
+    journal: "Journal of Open Source Software"
+    year: 2019
+    doi: "10.21105/joss.01296"
+    url: "https://joss.theoj.org/papers/10.21105/joss.01296"
+    notes: "MIT Licence — https://github.com/PMEAL/porespy"
+  - type: article
+    authors:
+      - family-names: "Gostick"
+        given-names: "Jeff T."
+      - family-names: "Aghighi"
+        given-names: "Masoud"
+      - family-names: "Hinebaugh"
+        given-names: "James"
+      - family-names: "Tranter"
+        given-names: "Thomas G."
+      - family-names: "Hoeh"
+        given-names: "Michael A."
+      - family-names: "Day"
+        given-names: "Harvey"
+      - family-names: "Hackett"
+        given-names: "Blair"
+      - family-names: "Kjeang"
+        given-names: "Erik"
+      - family-names: "Putz"
+        given-names: "Werner"
+      - family-names: "Nijmeijer"
+        given-names: "Rob"
+      - family-names: "Eikerling"
+        given-names: "Michael"
+      - family-names: "Entchev"
+        given-names: "Atanas"
+      - family-names: "Anantaraman"
+        given-names: "Sivakumar"
+      - family-names: "Newman"
+        given-names: "John"
+    title: "OpenPNM: A Pore Network Modeling Package"
+    journal: "Computing in Science & Engineering"
+    year: 2016
+    doi: "10.1109/MCSE.2016.49"
+    url: "https://ieeexplore.ieee.org/document/7473744"
+    notes: "MIT Licence — https://github.com/PMEAL/OpenPNM"
