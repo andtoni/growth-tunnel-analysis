@@ -1,4 +1,4 @@
-# Pore Network Analysis Pipeline for Electrospun Scaffolds
+# Pore Network Analysis Pipeline for Porous Biomaterials
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20308262.svg)](https://doi.org/10.5281/zenodo.20308262)
 [![Preprint](https://img.shields.io/badge/Preprint-SSRN-orange)](https://dx.doi.org/10.2139/ssrn.6664677)
@@ -6,15 +6,17 @@
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
 [![ORCID](https://img.shields.io/badge/ORCID-0000--0002--1601--4103-green)](https://orcid.org/0000-0002-1601-4103)
 
-A Python pipeline for extracting and quantifying pore networks from micro-CT scans of electrospun scaffolds, developed at the **University of Cape Town**. Uses [PoreSpy](https://github.com/PMEAL/porespy) and [OpenPNM](https://github.com/PMEAL/OpenPNM) for SNOW2-based network extraction and analysis. Outputs are compatible with GraphPad Prism (statistics) and ParaView (3D visualisation).
+A Python pipeline for extracting, quantifying and visualising pore networks from micro-CT scans of porous biomaterials. Originally developed for electrospun scaffolds at the **University of Cape Town**, this pipeline is applicable to **any porous material** used in biomedical research — including hydrogels, freeze-dried scaffolds, decellularised tissue, trabecular bone, sintered ceramics, and 3D-printed constructs.
+
+Uses [PoreSpy](https://github.com/PMEAL/porespy) and [OpenPNM](https://github.com/PMEAL/OpenPNM) for SNOW2-based pore network extraction. Statistical outputs are exported in formats compatible with **R, Stata, GraphPad Prism, SPSS, Python and Excel**.
 
 ---
 
 ## Associated Publication
 
-> **Tonelli, A.** et al. (2025). *In vivo validation of multimodality pore-network modelling to identify angio-permissive scaffold porosity.* Preprint available at SSRN: [https://dx.doi.org/10.2139/ssrn.6664677](https://dx.doi.org/10.2139/ssrn.6664677)
+> **Tonelli, A.** et al. (2025). *In vivo validation of multimodality pore-network modelling to identify angio-permissive scaffold porosity.* Preprint: [https://dx.doi.org/10.2139/ssrn.6664677](https://dx.doi.org/10.2139/ssrn.6664677)
 
-If you use this pipeline in your research, please cite the above paper and the code repository (see [CITATION.cff](CITATION.cff) and the **Cite this repository** button on GitHub).
+Please cite this paper and the code repository if you use the pipeline (see [CITATION.cff](CITATION.cff)).
 
 ---
 
@@ -27,10 +29,12 @@ If you use this pipeline in your research, please cite the above paper and the c
 5. [Script 01 — SNOW2 Extraction](#5-script-01--snow2-extraction)
 6. [Script 02 — Network Analysis](#6-script-02--network-analysis-and-threshold-sensitivity)
 7. [Script 03 — ParaView Visualisation](#7-script-03--paraview-batch-visualisation)
-8. [Outputs and GraphPad Prism](#8-outputs-and-graphpad-prism)
-9. [Troubleshooting](#9-troubleshooting)
-10. [Dependencies and Licences](#10-dependencies-and-licences)
-11. [Contact](#11-contact)
+8. [Script 04 — Network Quantification Export](#8-script-04--network-quantification-export)
+9. [Script 05 — Universal Data Export](#9-script-05--universal-data-export)
+10. [Statistical Analysis Guide](#10-statistical-analysis-guide)
+11. [Troubleshooting](#11-troubleshooting)
+12. [Dependencies and Licences](#12-dependencies-and-licences)
+13. [Contact](#13-contact)
 
 ---
 
@@ -39,29 +43,44 @@ If you use this pipeline in your research, please cite the above paper and the c
 ```
 Raw µCT projections
        ↓
-Reconstruction + Pre-processing
-(Dragonfly ORS / Fiji/ImageJ)
+Reconstruction + Pre-processing (Dragonfly ORS / Fiji/ImageJ)
        ↓  8-bit TIFF stack
-01_run_snow2.py            ← run ONCE per sample (~10–60 min)
+01_run_snow2.py               ← run ONCE per sample (~10–60 min)
        ↓  snow2_output.pkl + im_pores.npy + im_fibres.npy
-02_run_network_analysis.py ← run freely, adjust thresholds
-       ↓  growthtunnel.vtp | proj_02.vtp | image.tif | image2.tif | *.csv
-03_run_paraview_batch.py   ← run via pvpython (no virtual env needed)
+02_run_network_analysis.py    ← run freely, adjust thresholds
+       ↓  growthtunnel.vtp | proj_02.vtp | pore_data.csv | throat_data.csv
+03_run_paraview_batch.py      ← run via pvpython (no virtual env needed)
        ↓  3840×3840 PNG screenshots + .pvsm state files
-GraphPad Prism             ← import pore_data.csv / throat_data.csv
+04_quantification_export.py   ← topology & density metrics → Excel workbook
+       ↓  Pore_Network_Quantification.xlsx
+05_pnm_data_export.py         ← raw pore/throat data → universal CSV format
+       ↓  PNM_data_long.csv | PNM_summary_statistics.csv | wide/*.csv
+R / Stata / SPSS / GraphPad Prism / Python / Excel
 ```
 
-**Key design:** Script 01 (SNOW2) saves its result to disk. Scripts 02 and 03 reload that result in seconds, so threshold sensitivity analysis requires no re-extraction. Each threshold run saves to its own subfolder — no data is ever overwritten.
+**Key design:** Script 01 saves its result once. All other scripts reload in seconds. Scripts 04 and 05 are independent — run either or both after Script 02.
 
 ---
 
 ## 2. Raw µCT Data — Pre-Processing
 
-Before running the pipeline your µCT data must be reconstructed and exported as a clean 8-bit TIFF stack. This section covers the full process from raw scan to pipeline-ready images.
+### 2.1 Supported Material Types
 
-### 2.1 Scan Acquisition Parameters
+The pipeline accepts any porous material that can be imaged by µCT and binarised:
 
-Record and report these in your methods section:
+| Material | Examples |
+|---|---|
+| Electrospun fibres | PCL, PLGA, PLA scaffolds |
+| Freeze-dried hydrogels | Collagen, gelatin, chitosan |
+| Decellularised tissue | ECM scaffolds |
+| 3D-printed constructs | FDM, SLA porous structures |
+| Trabecular bone | Native or scaffold-seeded |
+| Sintered ceramics | HA, TCP, bioglass |
+| Polymer foams | Melt-derived porous scaffolds |
+
+The only requirement is that the µCT image can be binarised into **pore space (dark)** and **solid phase (bright)**.
+
+### 2.2 Scan Acquisition Parameters
 
 | Parameter | Description | Example |
 |---|---|---|
@@ -70,63 +89,35 @@ Record and report these in your methods section:
 | Current | X-ray tube current (µA) | 200 µA |
 | Exposure | Per-frame exposure (ms) | 500 ms |
 | Projections | Total angular projections | 1001 |
-| Filter | Hardware beam filter | Al 0.5 mm |
 
-> **Note your voxel size carefully** — it is a required input in Script 01 (`voxel_size` parameter).
+> **Note your voxel size carefully** — required in Scripts 01 and 04.
 
-### 2.2 Reconstruction
+### 2.3 Reconstruction
 
-Reconstruct raw projections using your scanner's software (e.g. NRecon for Bruker/SkyScan, CT-Pro for Nikon):
+1. Apply beam hardening correction (20–40% for polymer scaffolds)
+2. Apply ring artefact reduction if needed
+3. Export as **8-bit TIFF slices**: `slice_0001.tiff`, `slice_0002.tiff`, ...
 
-1. Open raw projections in reconstruction software
-2. Apply beam hardening correction (typically 20–40% for polymer scaffolds)
-3. Apply ring artefact reduction if needed
-4. Set output format to **8-bit TIFF slices**
-5. Export as sequentially numbered TIFFs: `slice_0001.tiff`, `slice_0002.tiff`, ...
+### 2.4 Pre-Processing in Dragonfly ORS (Recommended)
 
-### 2.3 Pre-Processing in Dragonfly ORS (Recommended)
+[Dragonfly ORS](https://theobjects.com/dragonfly/index.html) — free for academic use:
 
-[Dragonfly ORS](https://theobjects.com/dragonfly/index.html) is **free for academic use** and provides GPU-accelerated image processing:
+1. **File → Import** TIFF stack → **Filters → Gaussian** (sigma 0.5–1.0)
+2. **ROI Tools → Crop** — select Representative Elementary Volume (REV)
+3. **Image → Type → 8-bit** → **File → Export → Image Stack**
 
-1. **File → Import** your reconstructed TIFF stack
-2. **Image → Filters → Gaussian** — sigma 0.5–1.0 to reduce noise
-3. **ROI Tools → Crop** — select your Representative Elementary Volume (REV):
-   - Exclude boundary artefacts and beam hardening at sample edges
-   - Minimum 200×200×200 voxels recommended for electrospun scaffolds
-4. **Image → Type → 8-bit** if not already 8-bit
-5. **File → Export → Image Stack** — save as sequential TIFF
+### 2.5 Pre-Processing in Fiji/ImageJ
 
-### 2.4 Pre-Processing in Fiji/ImageJ (Free Alternative)
+1. **File → Import → Image Sequence** → **Gaussian Blur 3D** (sigma 0.5–1.0)
+2. Crop to REV → **Image → Type → 8-bit** → **Save As → Image Sequence**
 
-1. **File → Import → Image Sequence** — select first slice
-2. **Analyze → Histogram** — verify two peaks are visible (pores = dark, fibres = bright)
-3. **Process → Filters → Gaussian Blur 3D** — sigma 0.5–1.0
-4. Select REV region → **Image → Crop** — apply to all slices
-5. **Image → Type → 8-bit**
-6. **File → Save As → Image Sequence** — export as TIFF, start number 0001
+### 2.6 Checklist
 
-### 2.5 Verify Your Stack Is Ready
+- [ ] 8-bit grayscale TIFF, sequential numbering, no gaps
+- [ ] **Pore space = dark | Solid phase = bright**
+- [ ] No edge artefacts or beam hardening in the REV
 
-Organise files before running:
-
-```
-your_data/
-└── Sample_01/
-    └── tiff_stack/
-        ├── slice_0001.tiff
-        ├── slice_0002.tiff
-        └── ...
-```
-
-Checklist:
-
-- [ ] All slices present with sequential numbering and no gaps
-- [ ] All slices are the same width × height
-- [ ] Images are **8-bit grayscale TIFF** format
-- [ ] **Pores are dark (low intensity) | Fibres are bright (high intensity)**
-- [ ] No visible edge artefacts or beam hardening rings in the REV
-
-> If your images are inverted (pores bright, fibres dark), add `im = ~im` after binarisation in Script 01.
+> If inverted (pores bright), add `im = ~im` after binarisation in Script 01.
 
 ---
 
@@ -134,7 +125,7 @@ Checklist:
 
 ### 3.1 Install uv
 
-**Windows (PowerShell):**
+**Windows:**
 ```powershell
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
@@ -144,100 +135,47 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Restart your terminal, then verify: `uv --version`
-
-### 3.2 Clone the Repository
+### 3.2 Clone and Install
 
 ```bash
-git clone https://github.com/andtoni/pore-network-analysis
-cd pore-network-analysis
-```
-
-### 3.3 Create Environment and Install Packages
-
-**Windows:**
-```powershell
+git clone https://github.com/andtoni/growth-tunnel-analysis
+cd growth-tunnel-analysis
 uv venv --python 3.12
+# Windows:
 .venv\Scripts\activate
-uv pip install -r requirements.txt
-```
-
-**macOS / Linux:**
-```bash
-uv venv --python 3.12
+# macOS/Linux:
 source .venv/bin/activate
 uv pip install -r requirements.txt
 ```
 
-### 3.4 Verify Installation
+### 3.3 Verify
 
 ```bash
 python verify_environment.py
 ```
 
-Expected output:
-```
-ALL CHECKS PASSED — environment is ready
-```
+### 3.4 Install ParaView (Script 03 only)
 
-### 3.5 Install ParaView (Script 03 only)
-
-Download ParaView 5.13+ from: https://www.paraview.org/download/
-
-Script 03 uses ParaView's bundled `pvpython` interpreter — **your virtual environment does not need to be active** when running Script 03.
+Download ParaView 5.13+ from https://www.paraview.org/download/ — Script 03 uses its bundled `pvpython`, no virtual environment needed.
 
 ---
 
 ## 4. Directory Setup
 
-All three scripts share a single `data_dir`. The pipeline creates all required subfolders automatically:
-
 ```
-data_dir/                              ← set in all three scripts
-└── Sample_01/                         ← sample_name
-    ├── snow2_output.pkl               ← Script 01 output (never overwritten)
-    ├── im_pores.npy                   ← Script 01 output
-    ├── im_fibres.npy                  ← Script 01 output
+base_data_dir/
+└── Sample_01/
+    ├── snow2_output.pkl               ← Script 01
+    ├── im_pores.npy / im_fibres.npy   ← Script 01
     └── outputs/
-        ├── pore10um_throat10um/       ← one folder per threshold run
-        │   ├── growthtunnel.vtp       ← thresholded network (ParaView)
-        │   ├── proj_02.vtp            ← unthresholded network (ParaView)
-        │   ├── image.tif              ← fibre volume (ParaView)
-        │   ├── image2.tif             ← pore volume (ParaView)
-        │   ├── pore_data.csv          ← GraphPad Prism
-        │   ├── throat_data.csv        ← GraphPad Prism
-        │   ├── 01_histograms_raw.png
-        │   ├── 02_histograms_filtered.png
-        │   ├── Sample_01_pore10um_throat10um_visualization.png
-        │   └── Sample_01_pore10um_throat10um.pvsm
-        └── pore15um_throat15um/
-            └── ...
-```
-
-### Settings to Change in Each Script
-
-**Script 01** — change once per sample:
-```python
-sample_name = "Sample_01"         # unique name, no spaces
-voxel_size  = 0.54                # µm/voxel — from your scan parameters
-threshold   = 50                  # binarisation threshold (0–255)
-image_path  = r"C:\...\*.tiff"    # path to your TIFF stack
-data_dir    = r"C:\...\outputs"   # root output directory
-```
-
-**Script 02** — change per threshold run:
-```python
-sample_name      = "Sample_01"    # must match Script 01
-pore_threshold   = 10             # µm — minimum pore diameter to retain
-throat_threshold = 10             # µm — minimum throat diameter to retain
-data_dir         = r"C:\...\outputs"
-```
-
-**Script 03** — change when adding samples or thresholds:
-```python
-data_dir              = r"C:\...\outputs"
-samples               = ["Sample_01", "Sample_02"]
-threshold_combinations = [(5, 5), (10, 10), (15, 15)]
+        └── pore10um_throat10um/
+            ├── pore_data.csv          ← Script 02 → convert for Script 05
+            └── throat_data.csv        ← Script 02 → convert for Script 05
+Pore_Network_Quantification.xlsx       ← Script 04 output
+Pore_Throats_Summary/                  ← Script 05 input/output folder
+  poresSample_01.xlsx  throatsSample_01.xlsx
+  PNM_data_long.csv    PNM_summary_statistics.csv
+  wide/pore_ediameter_wide.csv  ...
 ```
 
 ---
@@ -245,134 +183,188 @@ threshold_combinations = [(5, 5), (10, 10), (15, 15)]
 ## 5. Script 01 — SNOW2 Extraction
 
 ```bash
-python scripts/01_run_snow2.py
+python 01_run_snow2.py
 ```
 
-Runs the SNOW2 pore network extraction algorithm (PoreSpy, Gostick et al. 2019) on your TIFF stack. Saves the result to disk so it never needs to be re-run.
-
-**Runtime:** 10–60 minutes depending on volume size and CPU. Script 01 will not overwrite an existing `snow2_output.pkl` — delete it manually if you need to re-run for a sample.
-
-**Check your threshold:** Run Script 02 and inspect `01_histograms_raw.png`. The histogram should show a clear bimodal distribution. If porosity is <1% or >99%, adjust the threshold.
+Run once per sample. Settings: `sample_name`, `voxel_size`, `threshold`, `image_path`, `base_data_dir`. Runtime: 10–60 min.
 
 ---
 
 ## 6. Script 02 — Network Analysis and Threshold Sensitivity
 
 ```bash
-python scripts/02_run_network_analysis.py
+python 02_run_network_analysis.py
 ```
 
-Loads the saved SNOW2 output (seconds), builds the network model, applies filters, and exports all results. Run freely with different thresholds.
+Loads saved pkl (seconds), applies size thresholds, extracts the largest connected cluster, exports CSV and VTK outputs. Run freely — each threshold saves to its own subfolder.
 
-**Network cleaning procedure:**
-1. Remove throats below `throat_threshold`
-2. Remove pores below `pore_threshold`
-3. **Extract largest connected cluster** (scipy graph analysis) — removes isolated pore islands not connected to the main percolating network
-4. Iterative health check — runs until the network is stable
+Settings: `sample_name`, `pore_threshold` (µm), `throat_threshold` (µm), `base_data_dir`.
 
-**Scientific justification for cluster removal:**
-Isolated pore clusters cannot support cell migration and are not functionally relevant to transmural scaffold growth. Their removal is consistent with biological interpretations of angio-permissive porosity as described in the associated publication.
-
-Include in your methods:
-> *"Following network extraction, only the largest percolating pore cluster was retained, as isolated clusters do not contribute to transmural cell migration pathways [Tonelli et al., 2025, doi:10.2139/ssrn.6664677]. Analysis code is available at https://github.com/andtoni/growth-tunnel-analysis (doi:10.5281/zenodo.20308262)."*
+> *"Only the largest percolating pore cluster was retained, as isolated clusters do not contribute to transmural migration pathways [Tonelli et al., 2025, doi:10.2139/ssrn.6664677]."*
 
 ---
 
 ## 7. Script 03 — ParaView Batch Visualisation
 
-**Windows PowerShell:**
+**Windows:**
 ```powershell
-& "C:\Program Files\ParaView 5.13.3\bin\pvpython.exe" "scripts\03_run_paraview_batch.py"
+& "C:\Program Files\ParaView 5.13.3\bin\pvpython.exe" "03_run_paraview_batch.py"
 ```
 
 **macOS:**
 ```bash
-/Applications/ParaView-5.13.3.app/Contents/bin/pvpython scripts/03_run_paraview_batch.py
+/Applications/ParaView-5.13.3.app/Contents/bin/pvpython 03_run_paraview_batch.py
 ```
 
-Generates publication-quality 3840×3840 PNG screenshots and `.pvsm` state files for every sample × threshold combination. If any required file is missing, that run is skipped with a clear message.
+Generates 3840×3840 screenshots and `.pvsm` state files for every sample × threshold.
 
 ---
 
-## 8. Outputs and GraphPad Prism
+## 8. Script 04 — Network Quantification Export
 
-### CSV Format
+```bash
+python 04_quantification_export.py
+```
 
-| File | Columns | Import into Prism as |
+Rebuilds the cleaned network from each pkl (seconds), computes topology and density metrics, and writes a comprehensive Excel workbook. Mean pore/throat diameter is intentionally excluded as a primary metric — it is trivially bounded by the threshold. The metrics below are meaningful independent of threshold choice.
+
+**Settings:** `base_data_dir`, `samples`, `threshold_combinations`, `voxel_size_um`, `excel_filename`.
+
+**Primary metrics:**
+
+| Metric | Unit | Significance |
 |---|---|---|
-| `pore_data.csv` | `pore_diameter_um`, `pore_volume` | Column table → Y column |
-| `throat_data.csv` | `throat_diameter_um`, `throat_length_um` | Column table → Y column |
+| Porosity | % | Volume-based, threshold-independent |
+| Pore density | pores/mm³ | Normalised — comparable across sample sizes |
+| Throat density | throats/mm³ | Normalised interconnection measure |
+| Connectivity density | mm⁻³ | Euler-based, comparable to bone literature |
+| Coordination number | connections/pore | **Key topology metric** |
+| Dead-end pore fraction | % | Topologically non-permissive pores |
+| Well-connected fraction | % | Pores with ≥3 connections |
+| Throat length | µm | Transport/migration distance |
+| Throat aspect ratio | L/D | Transport difficulty index |
+| Constriction ratio | pore D / throat D | Bottleneck metric |
 
-See `examples/` for example output files.
-
-**In GraphPad Prism:**
-1. **File → New → Column Table**
-2. **File → Import → From File** → select CSV
-3. Assign `pore_diameter_um` or `throat_diameter_um` to Y
-4. Use **Analyze → Column Statistics** for descriptive statistics
-5. Use **Graphs → Box and Whisker** or **Frequency Distribution** for figures
+**Output — `Pore_Network_Quantification.xlsx`** (9 sheets): Primary Metrics Summary, Threshold Sensitivity, Coordination Numbers, Throat Lengths, Throat Aspect Ratios, Constriction Ratios, Full Data Archive, Metric Descriptions.
 
 ---
 
-## 9. Troubleshooting
+## 9. Script 05 — Universal Data Export
 
-| Error | Likely cause | Fix |
+```bash
+python 05_pnm_data_export.py
+```
+
+Exports raw pore and throat measurements in three universal formats — no software-specific formatting applied.
+
+### 9.1 Prepare Input Files
+
+Convert Script 02 CSV outputs to named xlsx files:
+
+```python
+import pandas as pd
+pd.read_csv(r"C:\...\pore_data.csv").to_excel(
+    r"C:\...\Pore_Throats_Summary\poresSample_01.xlsx", index=False)
+pd.read_csv(r"C:\...\throat_data.csv").to_excel(
+    r"C:\...\Pore_Throats_Summary\throatsSample_01.xlsx", index=False)
+```
+
+Name files as `pores<sample>.xlsx` and `throats<sample>.xlsx`.
+
+### 9.2 Settings
+
+```python
+INPUT_DIR  = r"C:\...\Pore_Throats_Summary"
+OUTPUT_DIR = r"C:\...\Pore_Throats_Summary"
+N_ROWS     = 512
+```
+
+### 9.3 Output Files
+
+| File | Format | Compatible with |
+|---|---|---|
+| `PNM_data_long.csv` | Long: data_type, variable, sample, value | R, Stata, SPSS, Python |
+| `PNM_summary_statistics.csv` | mean, SD, SEM, median, IQR, CV | All software |
+| `wide/<type>_<var>_wide.csv` | One column per sample | GraphPad Prism, Excel, JMP |
+| `PNM_data_README.txt` | Software-specific import guide | Reference |
+
+---
+
+## 10. Statistical Analysis Guide
+
+### R
+```r
+library(tidyverse)
+df <- read_csv("PNM_data_long.csv")
+df |> filter(data_type=="pore", variable=="ediameter") |>
+  ggplot(aes(x=sample, y=value, fill=sample)) + geom_boxplot() + theme_bw()
+aov(value ~ sample, data = df |> filter(data_type=="pore", variable=="ediameter")) |> summary()
+```
+
+### Stata
+```stata
+import delimited "PNM_data_long.csv", clear
+keep if data_type == "pore" & variable == "ediameter"
+encode sample, gen(group)
+oneway value group, tabulate
+```
+
+### GraphPad Prism
+Open `wide/pore_ediameter_wide.csv` as a Grouped Table (File → Import → From File). Each column = one sample. Use Analyze → One-way ANOVA or Column Statistics. If no graph appeared: click **New → New Graph of Existing Data**, select table, choose Box-and-Whiskers.
+
+### Python
+```python
+import pandas as pd, pingouin as pg
+df = pd.read_csv("PNM_data_long.csv")
+pore = df.query("data_type=='pore' and variable=='ediameter'")
+pg.anova(data=pore, dv="value", between="sample")
+```
+
+---
+
+## 11. Troubleshooting
+
+| Error | Cause | Fix |
 |---|---|---|
 | `FileNotFoundError: snow2_output.pkl` | Script 01 not run | Run `01_run_snow2.py` first |
-| `No TIFF files found` | Wrong path or extension | Check `image_path`; use `*.tiff` or `*.tif` |
-| Porosity 0% or 100% | Threshold wrong or image inverted | Adjust `threshold`; add `im = ~im` if inverted |
-| Script appears frozen | SNOW2 running normally | Check CPU in Task Manager — it should be active |
-| VTP files not generated | OpenPNM naming issue | `save_vtk_with_name()` handles this — check log |
-| Script 03 skips all runs | Missing Script 02 outputs | Run `02_run_network_analysis.py` first |
-| Isolated pores in ParaView | High threshold fragments network | Check cluster extraction log — lower threshold if needed |
-| `pvpython` not found | Wrong ParaView install path | Run `Get-Item "C:\Program Files\ParaView*"` to find path |
-| Memory error | Image stack too large | Crop to a smaller REV in Fiji/Dragonfly |
+| `No TIFF files found` | Wrong path/extension | Check `image_path`; use `*.tiff` or `*.tif` |
+| Porosity 0% or 100% | Wrong threshold or inverted image | Adjust `threshold`; add `im = ~im` |
+| Script 04 finds no data | pkl/npy files missing | Run Scripts 01 and 02 first |
+| Script 05 finds no files | Wrong naming | Files must be `pores<sample>.xlsx` |
+| `openpyxl` not found | Not installed | `uv pip install openpyxl` |
+| `networkx` not found | Optional, not installed | Set `compute_path_length = False` |
+| `pvpython` not found | Wrong ParaView path | `Get-Item "C:\Program Files\ParaView*"` |
 
 ---
 
-## 10. Dependencies and Licences
+## 12. Dependencies and Licences
 
-This pipeline is released under the **MIT Licence** (see [LICENSE](LICENSE)). All third-party dependencies are used as external libraries via `pip install` and retain their own licences. See [LICENSE](LICENSE) for full third-party notices.
+Released under the **MIT Licence** (see [LICENSE](LICENSE)).
 
-| Package | Version | Licence | Citation |
+| Package | Version | Licence | Used by |
 |---|---|---|---|
-| **PoreSpy** | 2.2.0 | MIT | Gostick et al. (2019). *JOSS*. [doi:10.21105/joss.01296](https://doi.org/10.21105/joss.01296) |
-| **OpenPNM** | 3.3.0 | MIT | Gostick et al. (2016). *Comput. Sci. Eng.* [doi:10.1109/MCSE.2016.49](https://doi.org/10.1109/MCSE.2016.49) |
-| NumPy | 1.26.4 | BSD-3-Clause | — |
-| SciPy | 1.13.1 | BSD-3-Clause | — |
-| scikit-image | 0.22.0 | BSD-3-Clause | — |
-| Matplotlib | 3.9.0 | PSF | — |
-| imageio | 2.34.0 | BSD-2-Clause | — |
-| pandas | 2.2.0 | BSD-3-Clause | — |
-| pypardiso | 0.4.6 | MIT | optional |
-| **ParaView** | 5.13+ | BSD-3-Clause | Kitware Inc. https://www.paraview.org |
-
-**PoreSpy and OpenPNM are both MIT licensed.** MIT licence compliance requires citing their authors in publications — the table above provides the required citations. No licence text inclusion is required for end-user software that uses these packages as dependencies (only for redistribution of modified source code).
-
-If you use this pipeline in a publication, please also cite PoreSpy and OpenPNM directly:
-
-```
-Gostick J, Khan ZA, Tranter TG, et al. PoreSpy: A Python Toolkit for
-Quantitative Analysis of Porous Media Images. Journal of Open Source
-Software. 2019;4(37):1296. doi:10.21105/joss.01296
-
-Gostick JT, Aghighi M, Hinebaugh J, et al. OpenPNM: A Pore Network
-Modeling Package. Computing in Science & Engineering. 2016;18(4):60–74.
-doi:10.1109/MCSE.2016.49
-```
+| **PoreSpy** | 2.2.0 | MIT | Scripts 01–02 · [doi:10.21105/joss.01296](https://doi.org/10.21105/joss.01296) |
+| **OpenPNM** | 3.3.0 | MIT | Scripts 02–04 · [doi:10.1109/MCSE.2016.49](https://doi.org/10.1109/MCSE.2016.49) |
+| NumPy | 1.26.4 | BSD-3 | Scripts 01–04 |
+| SciPy | 1.13.1 | BSD-3 | Scripts 01–05 |
+| scikit-image | 0.22.0 | BSD-3 | Scripts 01–02 |
+| Matplotlib | 3.9.0 | PSF | Scripts 01–02 |
+| imageio | 2.34.0 | BSD-2 | Script 02 |
+| pandas | 2.2.0 | BSD-3 | Scripts 02, 05 |
+| openpyxl | 3.1.2 | MIT | Scripts 04–05 |
+| pypardiso | 0.4.6 | MIT | Scripts 01–02 (optional) |
+| networkx | ≥3.0 | BSD-3 | Script 04 (optional) |
+| **ParaView** | 5.13+ | BSD-3 | Script 03 |
 
 ---
 
-## 11. Contact
+## 13. Contact
 
-**Andrea Tonelli**
-University of Cape Town, South Africa
-tnland001@myuct.ac.za
-ORCID: [0000-0002-1601-4103](https://orcid.org/0000-0002-1601-4103)
-GitHub: [@andtoni](https://github.com/andtoni)
+**Andrea Tonelli** · University of Cape Town
+tnland001@myuct.ac.za · ORCID: [0000-0002-1601-4103](https://orcid.org/0000-0002-1601-4103) · [@andtoni](https://github.com/andtoni)
 
-For questions about adapting this pipeline to other porous materials or imaging modalities, please open a [GitHub issue](https://github.com/andtoni/growth-tunnel-analysis/issues).
+For questions about adapting this pipeline to other porous materials, open a [GitHub issue](https://github.com/andtoni/growth-tunnel-analysis/issues).
 
 ---
 
-*Developed for the analysis of electrospun scaffold architecture using nano-CT imaging, University of Cape Town, 2025.*
+*Developed at the University of Cape Town, 2025. Originally applied to electrospun scaffold characterisation — designed to be applicable to any porous biomaterial that can be imaged by micro-CT.*
