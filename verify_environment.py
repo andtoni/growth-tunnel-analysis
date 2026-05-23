@@ -3,7 +3,7 @@
 # =============================================================================
 # Author:      Andrea Tonelli (tnland001@myuct.ac.za)
 # ORCID:       https://orcid.org/0000-0002-1601-4103
-# Repository:  https://github.com/andtoni/pore-network-analysis
+# Repository:  https://github.com/andtoni/growth-tunnel-analysis
 #
 # Run this before any pipeline script to verify your Python environment.
 #
@@ -16,7 +16,7 @@ import sys
 print("=" * 60)
 print("Pore Network Analysis Pipeline — Environment Verification")
 print("Tonelli A. — University of Cape Town — 2025")
-print("https://github.com/andtoni/pore-network-analysis")
+print("https://github.com/andtoni/growth-tunnel-analysis")
 print("=" * 60)
 
 errors   = []
@@ -33,40 +33,51 @@ else:
 
 # Required packages with licence info
 packages = [
-    # (import_name, display_name, licence)
-    ("numpy",      "numpy",        "BSD-3-Clause"),
-    ("scipy",      "scipy",        "BSD-3-Clause"),
-    ("skimage",    "scikit-image", "BSD-3-Clause"),
-    ("matplotlib", "matplotlib",   "PSF"),
-    ("porespy",    "porespy",      "MIT — Gostick et al. 2019 doi:10.21105/joss.01296"),
-    ("openpnm",    "openpnm",      "MIT — Gostick et al. 2016 doi:10.1109/MCSE.2016.49"),
-    ("imageio",    "imageio",      "BSD-2-Clause"),
-    ("pandas",     "pandas",       "BSD-3-Clause"),
-    ("tqdm",       "tqdm",         "MIT/MPLv2"),
+    # (import_name, display_name, required_by, licence)
+    ("numpy",      "numpy",        "Scripts 01-04", "BSD-3-Clause"),
+    ("scipy",      "scipy",        "Scripts 01-04", "BSD-3-Clause"),
+    ("skimage",    "scikit-image", "Scripts 01-02", "BSD-3-Clause"),
+    ("matplotlib", "matplotlib",   "Scripts 01-02", "PSF"),
+    ("porespy",    "porespy",      "Script 01",
+     "MIT — Gostick et al. 2019 doi:10.21105/joss.01296"),
+    ("openpnm",    "openpnm",      "Scripts 02-04",
+     "MIT — Gostick et al. 2016 doi:10.1109/MCSE.2016.49"),
+    ("imageio",    "imageio",      "Script 02",     "BSD-2-Clause"),
+    ("pandas",     "pandas",       "Scripts 02-05", "BSD-3-Clause"),
+    ("tqdm",       "tqdm",         "Scripts 01-02", "MIT/MPLv2"),
+    ("openpyxl",   "openpyxl",     "Scripts 04-05", "MIT"),
 ]
 
 print()
-print(f"  {'Package':<16} {'Version':<12} {'Licence'}")
-print(f"  {'-'*16} {'-'*12} {'-'*45}")
+print(f"  {'Package':<16} {'Version':<12} {'Required by':<16} {'Licence'}")
+print(f"  {'-'*16} {'-'*12} {'-'*16} {'-'*40}")
 
-for import_name, display_name, licence in packages:
+for import_name, display_name, required_by, licence in packages:
     try:
         mod = __import__(import_name)
-        ver = getattr(mod, "__version__", "stdlib")
-        print(f"  {display_name:<16} {ver:<12} {licence}")
+        ver = getattr(mod, "__version__", "installed")
+        print(f"  {display_name:<16} {ver:<12} {required_by:<16} {licence}")
     except ImportError:
-        print(f"  {display_name:<16} {'MISSING':<12} {licence}")
+        print(f"  {display_name:<16} {'MISSING':<12} {required_by:<16} {licence}")
         errors.append(display_name)
 
-# Optional — pypardiso (speeds up OpenPNM)
+# Optional packages
 print()
-try:
-    import pypardiso
-    ver = getattr(pypardiso, "__version__", "installed")
-    print(f"  {'pypardiso':<16} {ver:<12} MIT  (optional — solver acceleration active)")
-except ImportError:
-    print(f"  {'pypardiso':<16} {'not installed':<12} optional")
-    print(f"  {'':16} Install with: pip install pypardiso")
+optional = [
+    ("pypardiso", "pypardiso", "optional", "MIT",
+     "speeds up OpenPNM solver"),
+    ("networkx",  "networkx",  "Script 04 (optional)", "BSD-3-Clause",
+     "mean shortest path length computation"),
+]
+
+for import_name, display_name, required_by, licence, note in optional:
+    try:
+        mod = __import__(import_name)
+        ver = getattr(mod, "__version__", "installed")
+        print(f"  {display_name:<16} {ver:<12} {required_by:<16} {note}")
+    except ImportError:
+        print(f"  {display_name:<16} {'not installed':<12} {required_by:<16} {note}")
+        print(f"  {'':16} Install: uv pip install {import_name}")
 
 print()
 print("=" * 60)
@@ -74,7 +85,7 @@ print("=" * 60)
 if errors:
     print(f"FAILED — {len(errors)} missing package(s): {', '.join(errors)}")
     print()
-    print("To install all dependencies:")
+    print("Install all dependencies:")
     print("  uv pip install -r requirements.txt")
     sys.exit(1)
 elif warnings:
@@ -87,11 +98,12 @@ else:
     print("ALL CHECKS PASSED — environment is ready")
     print()
     print("Run scripts in this order:")
-    print("  1.  python scripts/01_run_snow2.py")
-    print("  2.  python scripts/02_run_network_analysis.py")
-    print("  3.  pvpython scripts/03_run_paraview_batch.py")
+    print("  1.  python 01_run_snow2.py")
+    print("  2.  python 02_run_network_analysis.py")
+    print("  3.  pvpython 03_run_paraview_batch.py")
+    print("  4.  python 04_quantification_export.py")
+    print("  5.  python 05_pnm_data_export.py")
 
-print("=" * 60)
 print()
 print("Third-party attributions:")
 print("  PoreSpy  — Gostick et al. (2019) doi:10.21105/joss.01296  [MIT]")

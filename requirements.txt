@@ -1,6 +1,6 @@
 # Pore Network Analysis Pipeline — Python Dependencies
 # Author: Andrea Tonelli — University of Cape Town — 2025
-# Repository: https://github.com/andtoni/pore-network-analysis
+# Repository: https://github.com/andtoni/growth-tunnel-analysis
 #
 # Install with:
 #   uv pip install -r requirements.txt
@@ -16,9 +16,12 @@
 #   matplotlib  PSF (permissive)
 #   imageio     BSD-2-Clause
 #   pandas      BSD-3-Clause
+#   openpyxl    MIT
 #   tqdm        MIT/MPLv2
 #   pypardiso   MIT (optional — speeds up OpenPNM solver)
+#   networkx    BSD-3-Clause (optional — required for Script 04 path length)
 
+# Core pipeline (Scripts 01–03)
 porespy==2.2.0
 openpnm==3.3.0
 numpy==1.26.4
@@ -28,4 +31,13 @@ matplotlib==3.9.0
 imageio==2.34.0
 pandas==2.2.0
 tqdm==4.66.0
+
+# Script 04 — quantification export
+openpyxl==3.1.2
+
+# Script 05 — pore/throat Prism export
+# (openpyxl and pandas already above)
+
+# Optional — performance and extended analysis
 pypardiso==0.4.6
+networkx>=3.0
