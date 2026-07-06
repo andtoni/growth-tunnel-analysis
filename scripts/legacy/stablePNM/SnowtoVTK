@@ -1,0 +1,111 @@
+import matplotlib
+matplotlib.use('Agg')
+
+import porespy as ps
+import openpnm as op
+import numpy as np
+import matplotlib.pyplot as plt
+import pickle
+import pandas as pd
+import os
+import sys
+import imageio.v2 as imageio
+from datetime import datetime
+
+def log(msg):
+    print(f"[{datetime.now().strftime('%H:%M:%S')}] {msg}")
+    sys.stdout.flush()
+
+output_dir = "outputs"
+os.makedirs(output_dir, exist_ok=True)
+
+# ── Load Saved SNOW2 Output ───────────────────────────────────────────────────
+log("Loading saved SNOW2 output...")
+with open(f"{output_dir}/snow2_output.pkl", "rb") as f:
+    snow_output = pickle.load(f)
+log("SNOW2 output loaded successfully!")
+
+# ── Build Pore Network ────────────────────────────────────────────────────────
+log("Building pore network model...")
+pn = op.io.network_from_porespy(snow_output.network)
+geo = op.models.collections.geometry.spheres_and_cylinders
+pn.add_model_collection(geo, domain='all')
+pn.regenerate_models()
+log(f"Network built: {pn.num_pores()} pores, {pn.num_throats()} throats")
+
+# ── Label Boundaries ──────────────────────────────────────────────────────────
+net = ps.networks.label_boundaries(network=pn)
+net = pn
+
+# ── Plot Initial Histograms ───────────────────────────────────────────────────
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=[12, 4])
+ax1.hist(pn['pore.inscribed_diameter'], bins=25, edgecolor='k')
+ax1.set_title('Pore Diameter (raw)')
+ax2.hist(pn['throat.inscribed_diameter'], bins=25, edgecolor='k')
+ax2.set_title('Throat Diameter (raw)')
+fig.savefig(f"{output_dir}/05_histograms_raw.png", dpi=150)
+plt.close()
+log("Saved: 05_histograms_raw.png")
+
+# ── Remove Growth Restrictive Throats ─────────────────────────────────────────
+log("Trimming restrictive throats (<10um)...")
+mask = net["throat.inscribed_diameter"] < 10
+op.topotools.trim(pn, throats=mask)
+
+# ── Remove Growth Restrictive Pores ──────────────────────────────────────────
+log("Trimming restrictive pores (<10um)...")
+mask = net["pore.inscribed_diameter"] < 10
+op.topotools.trim(pn, pores=mask)
+
+# ── Check Network Health ──────────────────────────────────────────────────────
+log("Checking network health...")
+h = op.utils.check_network_health(pn)
+print(h)
+
+# Combine all problem pores and trim in one operation
+pores_to_trim = np.union1d(h['isolated_pores'], h['disconnected_pores'])
+
+if len(pores_to_trim) > 0:
+    log(f"Trimming {len(pores_to_trim)} problematic pores...")
+    op.topotools.trim(network=pn, pores=pores_to_trim)
+    log("Trimming complete")
+else:
+    log("Network is healthy - no pores to trim")
+
+log(f"Final network: {pn.num_pores()} pores, {pn.num_throats()} throats")
+
+# ── Final Histograms ──────────────────────────────────────────────────────────
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=[12, 4])
+ax1.hist(pn['pore.inscribed_diameter'], bins=25, edgecolor='k')
+ax1.set_title('Pore Diameter (filtered)')
+ax2.hist(pn['throat.inscribed_diameter'], bins=25, edgecolor='k')
+ax2.set_title('Throat Diameter (filtered)')
+fig.savefig(f"{output_dir}/06_histograms_filtered.png", dpi=150)
+plt.close()
+log("Saved: 06_histograms_filtered.png")
+
+# ── Export CSV for Prism ──────────────────────────────────────────────────────
+log("Exporting CSVs for GraphPad Prism...")
+df_pores = pd.DataFrame({
+    'pore_diameter_um': pn['pore.inscribed_diameter'],
+    'pore_volume':      pn['pore.volume'],
+})
+df_throats = pd.DataFrame({
+    'throat_diameter_um': pn['throat.inscribed_diameter'],
+    'throat_length_um':   pn['throat.length'],
+})
+df_pores.to_csv(f"{output_dir}/pore_data.csv", index=False)
+df_throats.to_csv(f"{output_dir}/throat_data.csv", index=False)
+log("Saved: pore_data.csv and throat_data.csv")
+
+# ── Save VTK Network ──────────────────────────────────────────────────────────
+log("Saving VTK network file...")
+op.io.project_to_vtk(
+    project=pn.project,
+    filename=f"{output_dir}/growthtunnel"
+)
+
+log("=" * 50)
+log("Analysis complete!")
+log(f"Pores: {pn.num_pores()}, Throats: {pn.num_throats()}")
+log("=" * 50)

@@ -3,7 +3,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20308262.svg)](https://doi.org/10.5281/zenodo.20308262)
 [![Preprint](https://img.shields.io/badge/Preprint-SSRN-orange)](https://dx.doi.org/10.2139/ssrn.6664677)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
+[![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
 [![ORCID](https://img.shields.io/badge/ORCID-0000--0002--1601--4103-green)](https://orcid.org/0000-0002-1601-4103)
 
 A Python pipeline for extracting, quantifying and visualising pore networks from micro-CT scans of porous biomaterials. Originally developed for electrospun scaffolds at the **University of Cape Town**, this pipeline is applicable to **any porous material** used in biomedical research — including hydrogels, freeze-dried scaffolds, decellularised tissue, trabecular bone, sintered ceramics, and 3D-printed constructs.
@@ -17,6 +17,21 @@ Uses [PoreSpy](https://github.com/PMEAL/porespy) and [OpenPNM](https://github.co
 > **Tonelli, A.** et al. (2025). *In vivo validation of multimodality pore-network modelling to identify angio-permissive scaffold porosity.* Preprint: [https://dx.doi.org/10.2139/ssrn.6664677](https://dx.doi.org/10.2139/ssrn.6664677)
 
 Please cite this paper and the code repository if you use the pipeline (see [CITATION.cff](CITATION.cff)).
+
+## Local Canonical Repository
+
+Forgejo is the canonical working remote on this workstation:
+
+```bash
+git clone https://git.stilltarn.com/admin1/growth-tunnel-analysis.git
+cd growth-tunnel-analysis
+uv sync --extra pipeline
+uv run --extra pipeline python verify_environment.py
+```
+
+Paper material, generated analysis artefacts, manuscript files, Prism projects, mechanical-testing workbooks, and raw data live outside Git at:
+
+`/home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis`
 
 ---
 
@@ -123,38 +138,21 @@ The only requirement is that the µCT image can be binarised into **pore space (
 
 ## 3. Installation
 
-### 3.1 Install uv
-
-**Windows:**
-```powershell
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-```
-
-**macOS / Linux:**
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-### 3.2 Clone and Install
+### 3.1 Clone and Install
 
 ```bash
-git clone https://github.com/andtoni/growth-tunnel-analysis
+git clone https://git.stilltarn.com/admin1/growth-tunnel-analysis.git
 cd growth-tunnel-analysis
-uv venv --python 3.12
-# Windows:
-.venv\Scripts\activate
-# macOS/Linux:
-source .venv/bin/activate
-uv pip install -r requirements.txt
+uv sync --extra pipeline
 ```
 
-### 3.3 Verify
+### 3.2 Verify
 
 ```bash
-python verify_environment.py
+uv run --extra pipeline python verify_environment.py
 ```
 
-### 3.4 Install ParaView (Script 03 only)
+### 3.3 Install ParaView (Script 03 only)
 
 Download ParaView 5.13+ from https://www.paraview.org/download/ — Script 03 uses its bundled `pvpython`, no virtual environment needed.
 
@@ -206,9 +204,9 @@ Settings: `sample_name`, `pore_threshold` (µm), `throat_threshold` (µm), `base
 
 ## 7. Script 03 — ParaView Batch Visualisation
 
-**Windows:**
-```powershell
-& "C:\Program Files\ParaView 5.13.3\bin\pvpython.exe" "03_run_paraview_batch.py"
+**Linux:**
+```bash
+pvpython 03_run_paraview_batch.py
 ```
 
 **macOS:**
@@ -331,9 +329,9 @@ pg.anova(data=pore, dv="value", between="sample")
 | Porosity 0% or 100% | Wrong threshold or inverted image | Adjust `threshold`; add `im = ~im` |
 | Script 04 finds no data | pkl/npy files missing | Run Scripts 01 and 02 first |
 | Script 05 finds no files | Wrong naming | Files must be `pores<sample>.xlsx` |
-| `openpyxl` not found | Not installed | `uv pip install openpyxl` |
+| `openpyxl` not found | Pipeline extras not synced | `uv sync --extra pipeline` |
 | `networkx` not found | Optional, not installed | Set `compute_path_length = False` |
-| `pvpython` not found | Wrong ParaView path | `Get-Item "C:\Program Files\ParaView*"` |
+| `pvpython` not found | ParaView binary not on `PATH` | `which pvpython` or use the full ParaView `pvpython` path |
 
 ---
 
@@ -361,9 +359,9 @@ Released under the **MIT Licence** (see [LICENSE](LICENSE)).
 ## 13. Contact
 
 **Andrea Tonelli** · University of Cape Town
-tnland001@myuct.ac.za · ORCID: [0000-0002-1601-4103](https://orcid.org/0000-0002-1601-4103) · [@andtoni](https://github.com/andtoni)
+tnland001@myuct.ac.za · ORCID: [0000-0002-1601-4103](https://orcid.org/0000-0002-1601-4103)
 
-For questions about adapting this pipeline to other porous materials, open a [GitHub issue](https://github.com/andtoni/growth-tunnel-analysis/issues).
+For questions about adapting this pipeline to other porous materials, use the canonical Forgejo repository or contact the author.
 
 ---
 

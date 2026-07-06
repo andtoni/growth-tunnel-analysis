@@ -10,9 +10,9 @@ title: "Pore Network Analysis Pipeline for Electrospun Scaffolds"
 version: 1.0.0
 date-released: 2025-05-20
 doi: 10.5281/zenodo.20308262
-url: "https://github.com/andtoni/growth-tunnel-analysis"
+url: "https://git.stilltarn.com/admin1/growth-tunnel-analysis"
 license: MIT
-repository-code: "https://github.com/andtoni/growth-tunnel-analysis"
+repository-code: "https://git.stilltarn.com/admin1/growth-tunnel-analysis"
 abstract: >
   A Python pipeline for extracting and analysing pore networks from micro-CT
   scans of electrospun scaffolds. Uses PoreSpy and OpenPNM for SNOW2-based

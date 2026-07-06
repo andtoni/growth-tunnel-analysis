@@ -1,0 +1,64 @@
+project:
+  slug: growth-tunnel-analysis
+  title: "Growth Tunnel Analysis"
+  profile: imaging-paper
+  target_journal: "Published/preprint-associated; confirm final venue"
+  timezone: Africa/Johannesburg
+  canonical_remote: https://git.stilltarn.com/admin1/growth-tunnel-analysis.git
+  archived_remote_note: "Old Paper 2/Git checkout pointed at GitHub; Forgejo is now canonical."
+
+locations:
+  code_repo: /home/andto/coding/papers/growth-tunnel-analysis
+  project_material: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis
+  rule: "Keep Git code in code_repo; keep raw data, manuscript artefacts, Prism projects, and generated outputs in project_material."
+
+data_roots:
+  - label: transmural_3d_analysis_archive
+    path: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/transmural-space-characterisation-3d-analysis-paper
+    immutable: true
+    tracked_by: external-nextcloud
+    contents: "Micro-CT/PNM/porosity/tortuosity/permeability/viscosity/thermal/figure material and generated outputs."
+  - label: paper_2_manuscript_extra_analysis
+    path: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/paper-2-manuscript-and-extra-analysis
+    immutable: true
+    tracked_by: external-nextcloud
+    contents: "Manuscript files, extra analysis, mechanical raw files, mechanical data summary, Prism project, figure panels."
+  - label: system_coding_mirror_legacy
+    path: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/_legacy/system-coding-mirror
+    immutable: true
+    tracked_by: external-nextcloud
+    contents: "Original migration-era stablePNM, confocalPorosity, and ImageJ macro folders after code copies were filed into Git."
+
+code_sources:
+  active_pipeline:
+    - 01_run_snow2.py
+    - 02_run_network_analysis.py
+    - 03_run_paraview_batch.py
+    - 04_quantification_export.py
+    - 05_pnm_data_export.py
+    - verify_environment.py
+  legacy_filed:
+    - scripts/legacy/stablePNM
+    - scripts/legacy/confocal-porosity/confocal_porosity.py
+    - scripts/legacy/imagej
+    - scripts/legacy/mechanical/InstronAnalysis.bas
+    - figures/source/paraview/p16SR.legacy-system.pvsm
+
+critical_material:
+  mechanical:
+    summary: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Mechanical Data Summary.xlsx
+    raw_dir: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Mechanical
+    vba: scripts/legacy/mechanical/InstronAnalysis.bas
+    table_docx: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Table for Mechanical Properties.docx
+    svg_table: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/mechanical_anisotropy_svg_table.svg
+  confocal_porosity:
+    script: scripts/legacy/confocal-porosity/confocal_porosity.py
+    output: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/transmural-space-characterisation-3d-analysis-paper/Porosity/Confocal/porosity_output
+  pore_network:
+    quantification_workbook: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/transmural-space-characterisation-3d-analysis-paper/codeoutput/Pore_Network_Quantification.xlsx
+    prism_grouped_workbook: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/transmural-space-characterisation-3d-analysis-paper/codeoutput/PNM_Prism_Grouped.xlsx
+
+workflow:
+  check: make check
+  install_pipeline_dependencies: uv sync --extra pipeline
+  verify_environment: uv run --extra pipeline python verify_environment.py

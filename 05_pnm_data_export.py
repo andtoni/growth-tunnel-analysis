@@ -4,7 +4,7 @@
 # Author:      Andrea Tonelli (tnland001@myuct.ac.za)
 # ORCID:       https://orcid.org/0000-0002-1601-4103
 # Institution: University of Cape Town
-# Repository:  https://github.com/andtoni/growth-tunnel-analysis
+# Repository:  https://git.stilltarn.com/admin1/growth-tunnel-analysis
 # Preprint:    https://dx.doi.org/10.2139/ssrn.6664677
 # Zenodo:      https://doi.org/10.5281/zenodo.20308262
 #
@@ -46,7 +46,7 @@
 #
 # Requires:
 #   pandas  — already in requirements.txt
-#   openpyxl — pip install openpyxl  (for reading xlsx input files)
+#   openpyxl — provided by `uv sync --extra pipeline` (for reading xlsx input files)
 #   scipy   — already in requirements.txt (for percentile statistics)
 # =============================================================================
 
@@ -325,7 +325,7 @@ readme_text = f"""PNM Data Export — Import Guide
 ================================================================================
 Author      : Andrea Tonelli — University of Cape Town
 ORCID       : https://orcid.org/0000-0002-1601-4103
-Repository  : https://github.com/andtoni/growth-tunnel-analysis
+Repository  : https://git.stilltarn.com/admin1/growth-tunnel-analysis
 Zenodo DOI  : https://doi.org/10.5281/zenodo.20308262
 Preprint    : https://dx.doi.org/10.2139/ssrn.6664677
 Generated   : {datetime.now().strftime("%Y-%m-%d %H:%M")}

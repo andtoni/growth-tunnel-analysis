@@ -4,7 +4,7 @@
 # Author:      Andrea Tonelli (tnland001@myuct.ac.za)
 # ORCID:       https://orcid.org/0000-0002-1601-4103
 # Institution: University of Cape Town
-# Repository:  https://github.com/andtoni/pore-network-analysis
+# Repository:  https://git.stilltarn.com/admin1/growth-tunnel-analysis
 # Preprint:    https://dx.doi.org/10.2139/ssrn.6664677
 #
 # Description:

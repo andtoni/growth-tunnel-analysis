@@ -3,12 +3,12 @@
 # =============================================================================
 # Author:      Andrea Tonelli (tnland001@myuct.ac.za)
 # ORCID:       https://orcid.org/0000-0002-1601-4103
-# Repository:  https://github.com/andtoni/growth-tunnel-analysis
+# Repository:  https://git.stilltarn.com/admin1/growth-tunnel-analysis
 #
 # Run this before any pipeline script to verify your Python environment.
 #
 # Usage:
-#   python verify_environment.py
+#   uv run --extra pipeline python verify_environment.py
 # =============================================================================
 
 import sys
@@ -16,7 +16,7 @@ import sys
 print("=" * 60)
 print("Pore Network Analysis Pipeline — Environment Verification")
 print("Tonelli A. — University of Cape Town — 2025")
-print("https://github.com/andtoni/growth-tunnel-analysis")
+print("https://git.stilltarn.com/admin1/growth-tunnel-analysis")
 print("=" * 60)
 
 errors   = []
@@ -25,11 +25,11 @@ warnings = []
 # Python version check
 major, minor = sys.version_info[:2]
 ver_str = f"Python {major}.{minor}"
-if major == 3 and minor >= 11:
+if major == 3 and minor == 12:
     print(f"{ver_str:<20} OK")
 else:
-    print(f"{ver_str:<20} WARNING — Python 3.11+ recommended")
-    warnings.append(f"{ver_str} detected; Python 3.11+ is recommended")
+    print(f"{ver_str:<20} WARNING — Python 3.12 recommended")
+    warnings.append(f"{ver_str} detected; Python 3.12 is recommended")
 
 # Required packages with licence info
 packages = [
@@ -77,7 +77,7 @@ for import_name, display_name, required_by, licence, note in optional:
         print(f"  {display_name:<16} {ver:<12} {required_by:<16} {note}")
     except ImportError:
         print(f"  {display_name:<16} {'not installed':<12} {required_by:<16} {note}")
-        print(f"  {'':16} Install: uv pip install {import_name}")
+        print(f"  {'':16} Install: uv sync --extra pipeline")
 
 print()
 print("=" * 60)
@@ -86,7 +86,7 @@ if errors:
     print(f"FAILED — {len(errors)} missing package(s): {', '.join(errors)}")
     print()
     print("Install all dependencies:")
-    print("  uv pip install -r requirements.txt")
+    print("  uv sync --extra pipeline")
     sys.exit(1)
 elif warnings:
     print(f"PASSED with {len(warnings)} warning(s):")
@@ -98,11 +98,11 @@ else:
     print("ALL CHECKS PASSED — environment is ready")
     print()
     print("Run scripts in this order:")
-    print("  1.  python 01_run_snow2.py")
-    print("  2.  python 02_run_network_analysis.py")
+    print("  1.  uv run --extra pipeline python 01_run_snow2.py")
+    print("  2.  uv run --extra pipeline python 02_run_network_analysis.py")
     print("  3.  pvpython 03_run_paraview_batch.py")
-    print("  4.  python 04_quantification_export.py")
-    print("  5.  python 05_pnm_data_export.py")
+    print("  4.  uv run --extra pipeline python 04_quantification_export.py")
+    print("  5.  uv run --extra pipeline python 05_pnm_data_export.py")
 
 print()
 print("Third-party attributions:")
