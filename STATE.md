@@ -10,6 +10,7 @@ The complete associated material has been moved into `/home/andto/Nextcloud/Work
 
 - `Original/transmural-space-characterisation-3d-analysis-paper`
 - `Original/paper-2-manuscript-and-extra-analysis`
+- `Manuscript/mtbio-d-26-02595-revision-package-2026-06`
 - `_legacy/system-coding-mirror`
 
 The active published pipeline remains at the repository root:
@@ -32,6 +33,12 @@ Legacy paper-specific code has been filed into Git under `scripts/legacy/`, incl
 - Prism project: `Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Project2.prism`
 - Confocal porosity output: `Original/transmural-space-characterisation-3d-analysis-paper/Porosity/Confocal/porosity_output`
 - PNM summary workbooks: `Original/transmural-space-characterisation-3d-analysis-paper/codeoutput`
+- Latest clean manuscript: `Manuscript/mtbio-d-26-02595-revision-package-2026-06/paper2_v3_clean.docx`
+- Latest tracked manuscript: `Manuscript/mtbio-d-26-02595-revision-package-2026-06/paper2_v3_tracked.docx`
+- Latest response to reviewers: `Manuscript/mtbio-d-26-02595-revision-package-2026-06/detailedreviewerresponses_v3.docx`
+- Latest cover letter: `Manuscript/mtbio-d-26-02595-revision-package-2026-06/coverletter_v3.docx`
+- Original reviewer comments: `Manuscript/mtbio-d-26-02595-revision-package-2026-06/Reviewer Comments Original.docx`
+- Manuscript package checksum manifest: `Manuscript/manifests/mtbio-d-26-02595-revision-package-2026-06.sha256`
 
 ## Resume Procedure
 
