@@ -1,0 +1,48 @@
+name: GitHub estate baseline
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+      - "**/Dockerfile*"
+      - "**/package.json"
+      - "**/package-lock.json"
+      - "**/pnpm-lock.yaml"
+      - "**/yarn.lock"
+      - "**/bun.lock*"
+      - "**/pyproject.toml"
+      - "**/uv.lock"
+      - "**/requirements*.txt"
+      - "**/*.tf"
+      - "renovate.json"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/**"
+      - "**/Dockerfile*"
+      - "**/package.json"
+      - "**/package-lock.json"
+      - "**/pnpm-lock.yaml"
+      - "**/yarn.lock"
+      - "**/bun.lock*"
+      - "**/pyproject.toml"
+      - "**/uv.lock"
+      - "**/requirements*.txt"
+      - "**/*.tf"
+      - "renovate.json"
+  schedule:
+    - cron: "23 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: estate-baseline-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security:
+    uses: andtoni/homelab/.github/workflows/reusable-baseline.yml@40c9852086c8855bca9074705e237eae5b8dc117
+    with:
+      enforce: false
