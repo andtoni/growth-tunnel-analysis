@@ -29,7 +29,7 @@ jobs:
           persist-credentials: false
 
       - name: Run canonical Dagger pipeline
-        uses: andtoni/.github/.github/actions/workstream-ci@d249e1c5c3039ea05235bc4327606f05f18c0402
+        uses: andtoni/.github/.github/actions/workstream-ci@4221e48556af34de316242d714881f07f7b09ee1
         with:
           category: "research"
 
