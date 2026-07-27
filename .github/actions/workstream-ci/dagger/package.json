@@ -1,0 +1,10 @@
+{
+  "type": "module",
+  "dependencies": {
+    "typescript": "5.9.3",
+    "yaml": "2.8.1"
+  },
+  "devDependencies": {
+    "prettier": "3.8.3"
+  }
+}
