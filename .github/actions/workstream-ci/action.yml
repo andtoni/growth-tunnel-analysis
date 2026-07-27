@@ -1,0 +1,17 @@
+name: Canonical workstream validation
+description: Run the estate-standard Dagger, Trivy, and category-native pipeline
+inputs:
+  category:
+    description: infrastructure, software, or research
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Run canonical Dagger pipeline
+      uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77
+      with:
+        version: v0.21.7
+        verb: call
+        args: --mod=${{ github.action_path }}/dagger validate --source=${{ github.workspace }} --category=${{ inputs.category }}
+        dagger-flags: --progress plain
+        enable-github-summary: true
