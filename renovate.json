@@ -1,25 +1,49 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
+  "extends": [
+    "config:recommended"
+  ],
   "dependencyDashboard": true,
-  "labels": ["dependencies", "renovate"],
+  "labels": [
+    "dependencies",
+    "renovate"
+  ],
   "rangeStrategy": "pin",
   "rebaseWhen": "auto",
   "platformAutomerge": true,
   "automerge": false,
   "timezone": "Europe/London",
-  "schedule": ["after 20:00 on Saturday", "before 06:00 on Sunday"],
+  "schedule": [
+    "after 20:00 on Saturday",
+    "before 06:00 on Sunday"
+  ],
   "packageRules": [
     {
+      "description": "Use GitHub native auto-merge for non-major dependency updates",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
       "description": "Require explicit review for CI supply-chain updates",
-      "matchManagers": ["github-actions"],
+      "matchManagers": [
+        "github-actions"
+      ],
       "automerge": false
     },
     {
       "description": "Dashboard-gate major updates",
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "dependencyDashboardApproval": true,
       "automerge": false
     }
-  ]
+  ],
+  "automergeType": "pr"
 }
