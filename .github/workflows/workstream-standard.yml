@@ -1,0 +1,68 @@
+name: Canonical workstream CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "23 4 * * 6"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: workstream-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validation:
+    name: Dagger and Trivy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run canonical Dagger pipeline
+        uses: andtoni/.github/.github/actions/workstream-ci@d249e1c5c3039ea05235bc4327606f05f18c0402
+        with:
+          category: "research"
+
+  workflow-security:
+    name: Zizmor
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Audit GitHub Actions security
+        uses: zizmorcore/zizmor-action@6fc4b006235f201fdab3722e17240ab420d580e5
+        with:
+          advanced-security: false
+          annotations: true
+          min-severity: high
+          min-confidence: high
+          version: v1.28.0
+
+  required:
+    name: required
+    if: always()
+    needs: [validation, workflow-security]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Require the complete workstream contract
+        env:
+          VALIDATION: ${{ needs.validation.result }}
+          WORKFLOWS: ${{ needs.workflow-security.result }}
+        run: |
+          test "$VALIDATION" = success
+          test "$WORKFLOWS" = success

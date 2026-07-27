@@ -60,10 +60,14 @@ outputs/
 # ── Paper-factory / local workflow ───────────────────────────────────────────
 .ruff_cache/
 .pytest_cache/
-uv.lock
 
 # ── Exceptions — keep example data and documentation images ──────────────────
 !examples/**/*.csv
 !docs/**/*.png
 !docs/**/*.svg
 !figures/source/**/*.svg
+# Canonical research material boundaries
+data/raw
+artifacts/*
+!artifacts/README.md
+.ipynb_checkpoints/
