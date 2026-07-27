@@ -12,7 +12,7 @@ workstream:
     commands:
     - uv lock --check
     - uv sync --extra dev
-    - uv run python scripts/check_project.py
+    - uv run python -m compileall -q scripts/check_project.py verify_environment.py 0*.py
     trivySkipDirs:
     - scripts/legacy
   research:
