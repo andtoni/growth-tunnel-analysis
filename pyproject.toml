@@ -19,7 +19,7 @@ pipeline = [
   "pypardiso==0.4.6",
   "scikit-image==0.22.0",
   "scipy==1.13.1",
-  "tqdm==4.66.0",
+  "tqdm==4.66.3",
 ]
 dev = [
   "pytest>=8.3",

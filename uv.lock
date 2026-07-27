@@ -231,7 +231,7 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.9" },
     { name = "scikit-image", marker = "extra == 'pipeline'", specifier = "==0.22.0" },
     { name = "scipy", marker = "extra == 'pipeline'", specifier = "==1.13.1" },
-    { name = "tqdm", marker = "extra == 'pipeline'", specifier = "==4.66.0" },
+    { name = "tqdm", marker = "extra == 'pipeline'", specifier = "==4.66.3" },
 ]
 provides-extras = ["pipeline", "dev"]
 
@@ -1040,14 +1040,14 @@ wheels = [
 
 [[package]]
 name = "tqdm"
-version = "4.66.0"
+version = "4.66.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f1/fb/6f40278d3b74f1486147aebf828ad081226f4f80b5b31a042386acc76dde/tqdm-4.66.0.tar.gz", hash = "sha256:cc6e7e52202d894e66632c5c8a9330bd0e3ff35d2965c93ca832114a3d865362", size = 169029, upload-time = "2023-08-09T10:45:13.56Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/03/00/6a9b3aedb0b60a80995ade30f718f1a9902612f22a1aaf531c85a02987f7/tqdm-4.66.3.tar.gz", hash = "sha256:23097a41eba115ba99ecae40d06444c15d1c0c698d527a01c6c8bd1c5d0647e5", size = 169551, upload-time = "2024-05-02T21:44:05.084Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a5/d6/502a859bac4ad5e274255576cd3e15ca273cdb91731bc39fb840dd422ee9/tqdm-4.66.0-py3-none-any.whl", hash = "sha256:39d459c7140b7890174e69d4d68d6291bc774a55b4bc5d93c0b760798ac5a03e", size = 78149, upload-time = "2023-08-09T10:45:10.81Z" },
+    { url = "https://files.pythonhosted.org/packages/d1/ad/7d47bbf2cae78ff79f29db0bed5016ec9c56b212a93fca624bb88b551a7c/tqdm-4.66.3-py3-none-any.whl", hash = "sha256:4f41d54107ff9a223dca80b53efe4fb654c67efaba7f47bada3ee9d50e05bd53", size = 78374, upload-time = "2024-05-02T21:44:01.541Z" },
 ]
 
 [[package]]
