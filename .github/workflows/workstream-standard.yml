@@ -2,8 +2,7 @@ name: Canonical workstream CI
 
 on:
   pull_request:
-  push:
-    branches: [main]
+    types: [opened, reopened, ready_for_review, synchronize]
   schedule:
     - cron: "23 4 * * 6"
   workflow_dispatch:
@@ -17,9 +16,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validation:
-    name: Dagger and Trivy
-    runs-on: ubuntu-24.04
+  required:
+    name: required
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    runs-on: [self-hosted, ci-isolated]
     timeout-minutes: 30
     steps:
       - name: Check out exact revision
@@ -33,16 +33,6 @@ jobs:
         with:
           category: "research"
 
-  workflow-security:
-    name: Zizmor
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - name: Check out exact revision
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          persist-credentials: false
-
       - name: Audit GitHub Actions security
         uses: zizmorcore/zizmor-action@6fc4b006235f201fdab3722e17240ab420d580e5
         with:
@@ -52,18 +42,3 @@ jobs:
           min-severity: high
           min-confidence: high
           version: v1.28.0
-
-  required:
-    name: required
-    if: always()
-    needs: [validation, workflow-security]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 2
-    steps:
-      - name: Require the complete workstream contract
-        env:
-          VALIDATION: ${{ needs.validation.result }}
-          WORKFLOWS: ${{ needs.workflow-security.result }}
-        run: |
-          test "$VALIDATION" = success
-          test "$WORKFLOWS" = success
