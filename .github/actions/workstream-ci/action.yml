@@ -12,6 +12,6 @@ runs:
       with:
         version: v0.21.7
         verb: call
-        args: --mod=${{ github.action_path }}/dagger validate --source=${{ github.workspace }} --category=${{ inputs.category }}
+        args: --mod=${{ github.action_path }}/dagger validate --source=${{ github.workspace }} --category=${{ inputs.category }} --commit-sha=${{ github.event.pull_request.head.sha || github.sha }}
         dagger-flags: --progress plain
         enable-github-summary: true
