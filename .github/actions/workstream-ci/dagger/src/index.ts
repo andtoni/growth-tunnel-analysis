@@ -20,6 +20,7 @@ type Project = {
   ci: {
     image: string;
     commands: string[];
+    formatCommand?: string;
     trivySkipDirs?: string[];
     trivyBaseline?: string;
   };
@@ -43,6 +44,9 @@ export class WorkstreamCi {
       project.ci.commands.some(
         (command) => typeof command !== "string" || !command.trim(),
       ) ||
+      (project.ci.formatCommand !== undefined &&
+        (typeof project.ci.formatCommand !== "string" ||
+          !project.ci.formatCommand.trim())) ||
       (project.ci.trivySkipDirs !== undefined &&
         (!Array.isArray(project.ci.trivySkipDirs) ||
           project.ci.trivySkipDirs.some((path) => typeof path !== "string"))) ||
@@ -210,6 +214,9 @@ export class WorkstreamCi {
       );
     for (const command of project.ci.commands) {
       container = container.withExec(["sh", "-euc", command]);
+    }
+    if (project.ci.formatCommand) {
+      container = container.withExec(["sh", "-euc", project.ci.formatCommand]);
     }
     await container.sync();
   }

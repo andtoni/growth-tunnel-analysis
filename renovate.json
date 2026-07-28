@@ -45,5 +45,8 @@
       "automerge": false
     }
   ],
-  "automergeType": "pr"
+  "automergeType": "pr",
+  "branchConcurrentLimit": 3,
+  "prConcurrentLimit": 3,
+  "prHourlyLimit": 2
 }
