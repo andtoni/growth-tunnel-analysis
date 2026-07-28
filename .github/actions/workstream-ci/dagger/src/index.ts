@@ -20,6 +20,7 @@ type Project = {
   ci: {
     image: string;
     commands: string[];
+    formatCommand?: string;
     trivySkipDirs?: string[];
     trivyBaseline?: string;
   };
@@ -43,6 +44,9 @@ export class WorkstreamCi {
       project.ci.commands.some(
         (command) => typeof command !== "string" || !command.trim(),
       ) ||
+      (project.ci.formatCommand !== undefined &&
+        (typeof project.ci.formatCommand !== "string" ||
+          !project.ci.formatCommand.trim())) ||
       (project.ci.trivySkipDirs !== undefined &&
         (!Array.isArray(project.ci.trivySkipDirs) ||
           project.ci.trivySkipDirs.some((path) => typeof path !== "string"))) ||
@@ -195,8 +199,14 @@ export class WorkstreamCi {
       .sync();
   }
 
-  private async native(source: Directory, project: Project): Promise<void> {
+  private async native(
+    source: Directory,
+    project: Project,
+    commitSha: string,
+  ): Promise<void> {
     if (project.ci.commands.length === 0) return;
+    if (commitSha && !/^[0-9a-f]{40}$/.test(commitSha))
+      throw new Error("commit SHA must be an exact lowercase Git revision");
     let container = dag
       .container()
       .from(project.ci.image)
@@ -208,8 +218,17 @@ export class WorkstreamCi {
         "/root/.cache",
         dag.cacheVolume(`workstream-${project.category}-cache`),
       );
+    if (commitSha) {
+      container = container
+        .withoutFile("/src/.git")
+        .withNewFile("/src/.git/HEAD", `${commitSha}\n`, { permissions: 0o444 })
+        .withEnvVariable("CI_COMMIT_SHA", commitSha);
+    }
     for (const command of project.ci.commands) {
       container = container.withExec(["sh", "-euc", command]);
+    }
+    if (project.ci.formatCommand) {
+      container = container.withExec(["sh", "-euc", project.ci.formatCommand]);
     }
     await container.sync();
   }
@@ -304,7 +323,11 @@ export class WorkstreamCi {
   }
 
   @func()
-  async validate(source: Directory, category: string): Promise<string> {
+  async validate(
+    source: Directory,
+    category: string,
+    commitSha = "",
+  ): Promise<string> {
     if (!CATEGORIES.has(category))
       throw new Error(`unsupported workstream category: ${category}`);
     const project = await this.project(source, category);
@@ -314,7 +337,7 @@ export class WorkstreamCi {
         project.ci.trivySkipDirs ?? [],
         project.ci.trivyBaseline,
       ),
-      this.native(source, project),
+      this.native(source, project, commitSha),
     ];
     if (category === "infrastructure") jobs.push(this.infrastructure(source));
     await Promise.all(jobs);

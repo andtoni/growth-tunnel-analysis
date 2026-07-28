@@ -2,7 +2,7 @@ name: Canonical workstream CI
 
 on:
   pull_request:
-    types: [opened, reopened, ready_for_review, synchronize]
+    types: [opened, reopened, ready_for_review, converted_to_draft, synchronize]
   schedule:
     - cron: "23 4 * * 6"
   workflow_dispatch:
