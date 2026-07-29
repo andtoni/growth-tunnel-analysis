@@ -1,0 +1,57 @@
+name: Canonical workstream validation
+description: Run the estate-standard staged Dagger and Trivy pipeline
+inputs:
+  category:
+    description: infrastructure, software, or research
+    required: true
+  source-directory:
+    description: Checked-out untrusted source directory
+    required: false
+    default: .
+  contract-directory:
+    description: Checked-out trusted project contract directory
+    required: false
+    default: .
+  stage:
+    description: pull-request or full
+    required: true
+  commit-sha:
+    description: Exact checked-out source revision
+    required: true
+  changed-files-b64:
+    description: Base64 NUL-delimited changed paths for pull-request validation
+    required: false
+    default: ""
+  allow-legacy-contract:
+    description: Explicit one-PR bridge from a trusted v1 base contract
+    required: false
+    default: "false"
+runs:
+  using: composite
+  steps:
+    - name: Bind the checked-out source identity
+      shell: bash
+      env:
+        SOURCE_DIRECTORY: ${{ inputs.source-directory }}
+        COMMIT_SHA: ${{ inputs.commit-sha }}
+      run: |
+        set -euo pipefail
+        [[ "$COMMIT_SHA" =~ ^[0-9a-f]{40}$ ]]
+        test "$(git -C "$SOURCE_DIRECTORY" rev-parse HEAD)" = "$COMMIT_SHA"
+
+    - name: Run canonical Dagger pipeline
+      uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77
+      with:
+        version: v0.21.7
+        verb: call
+        args: >-
+          --mod=${{ github.action_path }}/dagger validate
+          --source=${{ inputs.source-directory }}
+          --contract=${{ inputs.contract-directory }}
+          --category=${{ inputs.category }}
+          --stage=${{ inputs.stage }}
+          --commit-sha=${{ inputs.commit-sha }}
+          --changed-files-b64=${{ inputs.changed-files-b64 }}
+          --allow-legacy-contract=${{ inputs.allow-legacy-contract }}
+        dagger-flags: --progress plain
+        enable-github-summary: true
