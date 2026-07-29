@@ -22,10 +22,6 @@ inputs:
     description: Base64 NUL-delimited changed paths for pull-request validation
     required: false
     default: ""
-  allow-legacy-contract:
-    description: Explicit one-PR bridge from a trusted v1 base contract
-    required: false
-    default: "false"
 runs:
   using: composite
   steps:
@@ -52,6 +48,5 @@ runs:
           --stage=${{ inputs.stage }}
           --commit-sha=${{ inputs.commit-sha }}
           --changed-files-b64=${{ inputs.changed-files-b64 }}
-          --allow-legacy-contract=${{ inputs.allow-legacy-contract }}
         dagger-flags: --progress plain
         enable-github-summary: true

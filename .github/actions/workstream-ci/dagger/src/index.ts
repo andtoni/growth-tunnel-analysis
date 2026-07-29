@@ -167,68 +167,6 @@ export class WorkstreamCi {
     return project;
   }
 
-  private async legacyProject(
-    contract: Directory,
-    category: string,
-  ): Promise<Project> {
-    const document = YAML.parse(
-      await contract.file("project.yaml").contents(),
-    ) as { workstream?: Project } & Project;
-    const project = document.workstream ?? document;
-    const ci = project?.ci as unknown as {
-      image?: string;
-      commands?: unknown;
-      formatCommand?: unknown;
-      lanes?: unknown;
-      trivySkipDirs?: string[];
-      trivyBaseline?: string;
-    };
-    if (
-      project?.version !== 1 ||
-      !/^[a-z0-9][a-z0-9-]*$/.test(project.name) ||
-      project.category !== category ||
-      !ci ||
-      !DIGEST.test(ci.image ?? "") ||
-      !strings(ci.commands) ||
-      (ci.formatCommand !== undefined &&
-        (typeof ci.formatCommand !== "string" || !ci.formatCommand.trim())) ||
-      ci.lanes !== undefined ||
-      (ci.trivySkipDirs !== undefined &&
-        (!strings(ci.trivySkipDirs) ||
-          ci.trivySkipDirs.some((path) => !safeRelativePath(path)))) ||
-      (ci.trivyBaseline !== undefined &&
-        (typeof ci.trivyBaseline !== "string" ||
-          !safeRelativePath(ci.trivyBaseline)))
-    ) {
-      throw new Error("trusted project is not a supported legacy CI contract");
-    }
-    return {
-      version: project.version,
-      name: project.name,
-      category: project.category,
-      lifecycle: project.lifecycle,
-      ci: {
-        lanes: [
-          {
-            name: "legacy",
-            image: ci.image!,
-            paths: ["**"],
-            setupCommands: [],
-            pullRequestCommands: [
-              ...(ci.commands as string[]),
-              ...(typeof ci.formatCommand === "string"
-                ? [ci.formatCommand]
-                : []),
-            ],
-            fullCommands: [],
-          },
-        ],
-        trivySkipDirs: ci.trivySkipDirs,
-        trivyBaseline: ci.trivyBaseline,
-      },
-    };
-  }
-
   private async trivy(source: Directory, project: Project): Promise<void> {
     const skipArgs = [
       ".git",
@@ -432,11 +370,11 @@ export class WorkstreamCi {
 
   @func()
   async platform(source: Directory): Promise<string> {
-    const bridgeSource = dag.directory().withNewFile(
+    const canonicalSource = dag.directory().withNewFile(
       "project.yaml",
       `workstream:
   version: 1
-  name: bridge-canary
+  name: canonical-canary
   category: software
   lifecycle: active
   ci:
@@ -445,32 +383,17 @@ export class WorkstreamCi {
         image: ${NODE}
         paths: ["**"]
         setupCommands: []
-        pullRequestCommands: ["false"]
-        fullCommands: ["false"]
-`,
-    );
-    const legacyContract = dag.directory().withNewFile(
-      "project.yaml",
-      `workstream:
-  version: 1
-  name: bridge-canary
-  category: software
-  lifecycle: active
-  ci:
-    image: ${NODE}
-    commands: ["true"]
-    formatCommand: "true"
+        pullRequestCommands: []
+        fullCommands: []
 `,
     );
     await Promise.all([
       this.validate(
-        bridgeSource,
-        legacyContract,
+        canonicalSource,
+        canonicalSource,
         "software",
         "full",
         "a".repeat(40),
-        "",
-        true,
       ),
       this.trivy(source, {
         version: 1,
@@ -542,7 +465,6 @@ export class WorkstreamCi {
     stage: string,
     commitSha: string,
     changedFilesB64 = "",
-    allowLegacyContract = false,
   ): Promise<string> {
     if (
       !CATEGORIES.has(category) ||
@@ -551,23 +473,8 @@ export class WorkstreamCi {
     ) {
       throw new Error("invalid category, stage, or commit SHA");
     }
-    let project: Project;
-    let proposedValidated = false;
-    try {
-      project = await this.project(contract, category);
-    } catch (error) {
-      if (!allowLegacyContract) throw error;
-      const trusted = await this.legacyProject(contract, category);
-      const proposed = await this.project(source, category);
-      if (proposed.name !== trusted.name) {
-        throw new Error(
-          "proposed project identity differs from the trusted legacy contract",
-        );
-      }
-      project = trusted;
-      proposedValidated = true;
-    }
-    if (stage === "pull-request" && !proposedValidated) {
+    const project = await this.project(contract, category);
+    if (stage === "pull-request") {
       const proposed = await this.project(source, category);
       if (proposed.name !== project.name) {
         throw new Error(
