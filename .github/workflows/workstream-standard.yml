@@ -1,9 +1,6 @@
 name: Canonical workstream CI
 
 on:
-  # Transitional pull_request keeps the required gate present until this v2 workflow reaches main.
-  pull_request:
-    types: [opened, reopened, ready_for_review, converted_to_draft, synchronize]
   pull_request_target:
     types: [opened, reopened, ready_for_review, converted_to_draft, synchronize]
   push:
@@ -17,13 +14,13 @@ permissions:
   contents: read
 
 concurrency:
-  group: workstream-ci-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request_target' || github.event_name == 'pull_request' }}
+  group: workstream-ci-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request_target' }}
 
 jobs:
   required:
     name: required
-    if: (github.event_name != 'pull_request' && github.event_name != 'pull_request_target') || github.event.pull_request.draft == false
+    if: github.event_name != 'pull_request_target' || github.event.pull_request.draft == false
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -76,7 +73,7 @@ jobs:
 
       - name: Run canonical staged validation
         if: github.event_name != 'pull_request_target' || github.event.pull_request.draft == false
-        uses: ./contract/.github/actions/workstream-ci-v2
+        uses: ./contract/.github/actions/workstream-ci
         with:
           category: "research"
           source-directory: source
@@ -84,7 +81,6 @@ jobs:
           stage: ${{ github.event_name == 'pull_request_target' && 'pull-request' || 'full' }}
           commit-sha: ${{ github.event.pull_request.head.sha || github.sha }}
           changed-files-b64: ${{ steps.paths.outputs.changed-files-b64 }}
-          allow-legacy-contract: "true"
 
       - name: Audit GitHub Actions security
         if: github.event_name != 'pull_request_target' || github.event.pull_request.draft == false
