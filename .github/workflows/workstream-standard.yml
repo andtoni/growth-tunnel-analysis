@@ -1,8 +1,13 @@
 name: Canonical workstream CI
 
 on:
+  # Transitional pull_request keeps the required gate present until this v2 workflow reaches main.
   pull_request:
     types: [opened, reopened, ready_for_review, converted_to_draft, synchronize]
+  pull_request_target:
+    types: [opened, reopened, ready_for_review, converted_to_draft, synchronize]
+  push:
+    branches: [main]
   schedule:
     - cron: "23 4 * * 6"
   workflow_dispatch:
@@ -12,30 +17,80 @@ permissions:
   contents: read
 
 concurrency:
-  group: workstream-ci-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: workstream-ci-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request_target' || github.event_name == 'pull_request' }}
 
 jobs:
   required:
     name: required
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
-    runs-on: [self-hosted, ci-isolated]
+    if: (github.event_name != 'pull_request' && github.event_name != 'pull_request_target') || github.event.pull_request.draft == false
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - name: Check out exact revision
+      - name: Check out trusted contract
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          path: contract
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Run canonical Dagger pipeline
-        uses: ./.github/actions/workstream-ci
+      - name: Check out exact source revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Record pull request paths
+        if: github.event_name == 'pull_request_target'
+        id: paths
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          git -C source fetch --no-tags origin "$BASE_SHA"
+          git -C source diff --name-status --find-renames --diff-filter=ACDMRTUXB -z "$BASE_SHA...$HEAD_SHA" > "$RUNNER_TEMP/workstream-changes"
+          changed=$(python3 - "$RUNNER_TEMP/workstream-changes" <<'PY' | base64 -w0
+          import pathlib
+          import sys
+
+          fields = pathlib.Path(sys.argv[1]).read_bytes().split(b"\0")
+          if fields and fields[-1] == b"":
+              fields.pop()
+          paths = []
+          index = 0
+          while index < len(fields):
+              status = fields[index]
+              count = 2 if status[:1] in {b"R", b"C"} else 1
+              paths.extend(fields[index + 1 : index + 1 + count])
+              index += count + 1
+          if index != len(fields) or not paths:
+              raise SystemExit("empty or malformed changed-path set")
+          sys.stdout.buffer.write(b"\0".join(paths) + b"\0")
+          PY
+          )
+          echo "changed-files-b64=$changed" >> "$GITHUB_OUTPUT"
+
+      - name: Run canonical staged validation
+        if: github.event_name != 'pull_request_target' || github.event.pull_request.draft == false
+        uses: ./contract/.github/actions/workstream-ci-v2
         with:
           category: "research"
+          source-directory: source
+          contract-directory: contract
+          stage: ${{ github.event_name == 'pull_request_target' && 'pull-request' || 'full' }}
+          commit-sha: ${{ github.event.pull_request.head.sha || github.sha }}
+          changed-files-b64: ${{ steps.paths.outputs.changed-files-b64 }}
+          allow-legacy-contract: "true"
 
       - name: Audit GitHub Actions security
+        if: github.event_name != 'pull_request_target' || github.event.pull_request.draft == false
         uses: zizmorcore/zizmor-action@6fc4b006235f201fdab3722e17240ab420d580e5
         with:
+          inputs: source/.github/workflows
           advanced-security: false
           online-audits: false
           annotations: true
