@@ -90,7 +90,7 @@ jobs:
         if: github.event_name != 'pull_request_target' || github.event.pull_request.draft == false
         uses: zizmorcore/zizmor-action@6fc4b006235f201fdab3722e17240ab420d580e5
         with:
-          inputs: source/.github/workflows
+          inputs: source/.github
           advanced-security: false
           online-audits: false
           annotations: true
