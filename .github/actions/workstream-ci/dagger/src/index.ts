@@ -1,4 +1,4 @@
-import { dag, Directory, object, func } from "@dagger.io/dagger";
+import { dag, Directory, func, object } from "@dagger.io/dagger";
 import YAML from "yaml";
 
 const TRIVY =
@@ -10,89 +10,177 @@ const NODE =
 const TOFU =
   "ghcr.io/opentofu/opentofu@sha256:ba827d1af675c3f522eb78e2b8098cc87daefb9ceb9d3c4b69d0a1bb6d272463";
 const DIGEST = /^[a-z0-9][a-z0-9./:_-]*@sha256:[0-9a-f]{64}$/;
+const SHA = /^[0-9a-f]{40}$/;
 const CATEGORIES = new Set(["infrastructure", "software", "research"]);
+const STAGES = new Set(["pull-request", "full"]);
 
+type Lane = {
+  name: string;
+  image: string;
+  paths: string[];
+  setupCommands: string[];
+  pullRequestCommands: string[];
+  fullCommands: string[];
+};
 type Project = {
   version: number;
   name: string;
   category: string;
   lifecycle: string;
   ci: {
-    image: string;
-    commands: string[];
-    formatCommand?: string;
+    lanes: Lane[];
+    fullOnPaths?: string[];
+    noNativePaths?: string[];
     trivySkipDirs?: string[];
     trivyBaseline?: string;
   };
 };
 
+type Finding = {
+  kind: "vulnerability" | "misconfiguration";
+  target: string;
+  id: string;
+  package: string;
+  installedVersion: string;
+};
+
+function strings(value: unknown): value is string[] {
+  return (
+    Array.isArray(value) &&
+    value.every((item) => typeof item === "string" && item.trim())
+  );
+}
+
+function safeRelativePath(path: string): boolean {
+  return (
+    /^[A-Za-z0-9._/-]+$/.test(path) &&
+    !path.startsWith("/") &&
+    !path.split("/").includes("..")
+  );
+}
+
+function safeGlob(pattern: string): boolean {
+  return (
+    /^[A-Za-z0-9._/*?-]+$/.test(pattern) &&
+    !pattern.startsWith("/") &&
+    !pattern.split("/").includes("..")
+  );
+}
+
+function glob(pattern: string): RegExp {
+  let output = "^";
+  for (let index = 0; index < pattern.length; index += 1) {
+    const character = pattern[index];
+    if (character === "*") {
+      if (pattern[index + 1] === "*") {
+        index += 1;
+        if (pattern[index + 1] === "/") {
+          index += 1;
+          output += "(?:.*/)?";
+        } else {
+          output += ".*";
+        }
+      } else {
+        output += "[^/]*";
+      }
+    } else if (character === "?") {
+      output += "[^/]";
+    } else {
+      output += character.replace(/[|\\{}()[\]^$+?.]/g, "\\$&");
+    }
+  }
+  return new RegExp(`${output}$`);
+}
+
+function matches(paths: string[], patterns: string[]): boolean {
+  return paths.some((path) =>
+    patterns.some((pattern) => glob(pattern).test(path)),
+  );
+}
+
+function changedFiles(encoded: string): string[] {
+  if (!encoded) return [];
+  const decoded = Buffer.from(encoded, "base64").toString("utf8");
+  if (Buffer.from(decoded, "utf8").toString("base64") !== encoded) {
+    throw new Error("changed files must be canonical base64-encoded UTF-8");
+  }
+  const files = decoded.split("\0");
+  if (files.at(-1) === "") files.pop();
+  if (!files.length || files.some((path) => !path)) {
+    throw new Error("changed files must be a non-empty NUL-delimited list");
+  }
+  return files;
+}
+
 @object()
 export class WorkstreamCi {
-  private async project(source: Directory, category: string): Promise<Project> {
+  private async project(
+    contract: Directory,
+    category: string,
+  ): Promise<Project> {
     const document = YAML.parse(
-      await source.file("project.yaml").contents(),
-    ) as { workstream?: Project } & Project;
+      await contract.file("project.yaml").contents(),
+    ) as {
+      workstream?: Project;
+    } & Project;
     const project = document.workstream ?? document;
+    const ci = project?.ci;
     if (
-      project.version !== 1 ||
+      project?.version !== 1 ||
       !project.name ||
+      !/^[a-z0-9][a-z0-9-]*$/.test(project.name) ||
       !CATEGORIES.has(project.category) ||
       project.category !== category ||
-      !project.ci ||
-      !DIGEST.test(project.ci.image) ||
-      !Array.isArray(project.ci.commands) ||
-      project.ci.commands.some(
-        (command) => typeof command !== "string" || !command.trim(),
+      !ci ||
+      !Array.isArray(ci.lanes) ||
+      !ci.lanes.length ||
+      new Set(ci.lanes.map((lane) => lane?.name)).size !== ci.lanes.length ||
+      ci.lanes.some(
+        (lane) =>
+          !lane ||
+          !/^[a-z][a-z0-9-]*$/.test(lane.name) ||
+          !DIGEST.test(lane.image) ||
+          !strings(lane.paths) ||
+          !lane.paths.length ||
+          !strings(lane.setupCommands) ||
+          !strings(lane.pullRequestCommands) ||
+          !strings(lane.fullCommands) ||
+          lane.paths.some((path) => !safeGlob(path)),
       ) ||
-      (project.ci.formatCommand !== undefined &&
-        (typeof project.ci.formatCommand !== "string" ||
-          !project.ci.formatCommand.trim())) ||
-      (project.ci.trivySkipDirs !== undefined &&
-        (!Array.isArray(project.ci.trivySkipDirs) ||
-          project.ci.trivySkipDirs.some((path) => typeof path !== "string"))) ||
-      (project.ci.trivyBaseline !== undefined &&
-        typeof project.ci.trivyBaseline !== "string")
+      (ci.fullOnPaths !== undefined &&
+        (!strings(ci.fullOnPaths) ||
+          ci.fullOnPaths.some((path) => !safeGlob(path)))) ||
+      (ci.noNativePaths !== undefined &&
+        (!strings(ci.noNativePaths) ||
+          ci.noNativePaths.some((path) => !safeGlob(path)))) ||
+      (ci.trivySkipDirs !== undefined &&
+        (!strings(ci.trivySkipDirs) ||
+          ci.trivySkipDirs.some((path) => !safeRelativePath(path)))) ||
+      (ci.trivyBaseline !== undefined &&
+        (typeof ci.trivyBaseline !== "string" ||
+          !safeRelativePath(ci.trivyBaseline)))
     ) {
       throw new Error(
-        "project.yaml does not satisfy the canonical workstream CI contract",
+        "project.yaml does not satisfy the canonical staged CI contract",
       );
     }
     return project;
   }
 
-  private async trivy(
-    source: Directory,
-    skipDirs: string[] = [],
-    baselinePath?: string,
-  ): Promise<void> {
-    const safePath = (path: string) =>
-      /^[A-Za-z0-9._/-]+$/.test(path) &&
-      !path.startsWith("/") &&
-      !path.split("/").includes("..");
-    if (skipDirs.some((path) => !safePath(path))) {
-      throw new Error(
-        "Trivy skip directories must be safe repository-relative paths",
-      );
-    }
-    if (baselinePath && !safePath(baselinePath)) {
-      throw new Error(
-        "Trivy baseline must be a safe repository-relative JSON path",
-      );
-    }
-    const skipArgs = [".git", ".terraform", ...skipDirs].flatMap((path) => [
-      "--skip-dirs",
-      path,
-    ]);
+  private async trivy(source: Directory, project: Project): Promise<void> {
+    const skipArgs = [
+      ".git",
+      ".terraform",
+      ...(project.ci.trivySkipDirs ?? []),
+    ].flatMap((path) => ["--skip-dirs", path]);
+    const cache = dag.cacheVolume(`workstream-${project.name}-trivy`);
     const base = dag
       .container()
       .from(TRIVY)
       .withEntrypoint([])
       .withDirectory("/src", source)
       .withWorkdir("/src")
-      .withMountedCache(
-        "/root/.cache/trivy",
-        dag.cacheVolume("workstream-trivy"),
-      );
+      .withMountedCache("/root/.cache/trivy", cache);
     const assessed = base.withExec([
       "trivy",
       "fs",
@@ -123,17 +211,17 @@ export class WorkstreamCi {
         Misconfigurations?: Array<{ ID?: string; AVDID?: string }>;
       }>;
     };
-    const findings = (report.Results ?? [])
+    const findings: Finding[] = (report.Results ?? [])
       .flatMap((result) => [
         ...(result.Vulnerabilities ?? []).map((finding) => ({
-          kind: "vulnerability",
+          kind: "vulnerability" as const,
           target: result.Target ?? "",
           id: finding.VulnerabilityID ?? "",
           package: finding.PkgName ?? "",
           installedVersion: finding.InstalledVersion ?? "",
         })),
         ...(result.Misconfigurations ?? []).map((finding) => ({
-          kind: "misconfiguration",
+          kind: "misconfiguration" as const,
           target: result.Target ?? "",
           id: finding.AVDID ?? finding.ID ?? "",
           package: "",
@@ -143,14 +231,11 @@ export class WorkstreamCi {
       .sort((left, right) =>
         JSON.stringify(left).localeCompare(JSON.stringify(right)),
       );
-    let accepted: typeof findings = [];
-    if (baselinePath) {
+    let accepted: Finding[] = [];
+    if (project.ci.trivyBaseline) {
       const baseline = JSON.parse(
-        await source.file(baselinePath).contents(),
-      ) as {
-        version?: number;
-        findings?: typeof findings;
-      };
+        await source.file(project.ci.trivyBaseline).contents(),
+      ) as { version?: number; findings?: Finding[] };
       if (
         baseline.version !== 1 ||
         !Array.isArray(baseline.findings) ||
@@ -199,44 +284,53 @@ export class WorkstreamCi {
       .sync();
   }
 
-  private async native(
+  private async lane(
     source: Directory,
     project: Project,
+    lane: Lane,
+    stage: string,
     commitSha: string,
+    files: string[],
   ): Promise<void> {
-    if (project.ci.commands.length === 0) return;
-    if (commitSha && !/^[0-9a-f]{40}$/.test(commitSha))
-      throw new Error("commit SHA must be an exact lowercase Git revision");
+    const commands = [
+      ...lane.setupCommands,
+      ...lane.pullRequestCommands,
+      ...(stage === "full" ? lane.fullCommands : []),
+    ];
+    if (!commands.length) return;
     let container = dag
       .container()
-      .from(project.ci.image)
+      .from(lane.image)
       .withEntrypoint([])
       .withDirectory("/src", source)
       .withWorkdir("/src")
       .withEnvVariable("CI", "true")
+      .withEnvVariable("CI_STAGE", stage)
+      .withEnvVariable("CI_COMMIT_SHA", commitSha)
+      .withNewFile("/tmp/changed-files.json", JSON.stringify(files), {
+        permissions: 0o444,
+      })
+      .withEnvVariable("CI_CHANGED_FILES_FILE", "/tmp/changed-files.json")
       .withMountedCache(
         "/root/.cache",
-        dag.cacheVolume(`workstream-${project.category}-cache`),
+        dag.cacheVolume(`workstream-${project.name}-${lane.name}`),
       );
-    if (commitSha) {
-      container = container
-        .withoutFile("/src/.git")
-        .withNewFile("/src/.git/HEAD", `${commitSha}\n`, { permissions: 0o444 })
-        .withEnvVariable("CI_COMMIT_SHA", commitSha);
-    }
-    for (const command of project.ci.commands) {
+    for (const command of commands) {
       container = container.withExec(["sh", "-euc", command]);
-    }
-    if (project.ci.formatCommand) {
-      container = container.withExec(["sh", "-euc", project.ci.formatCommand]);
     }
     await container.sync();
   }
 
-  private async infrastructure(source: Directory): Promise<void> {
+  private async infrastructure(
+    source: Directory,
+    stage: string,
+    files: string[],
+    forceAll: boolean,
+  ): Promise<void> {
     const entries = new Set(await source.entries());
+    const full = stage === "full" || forceAll;
     const jobs: Promise<unknown>[] = [];
-    if (entries.has("ansible")) {
+    if (entries.has("ansible") && (full || matches(files, ["ansible/**"]))) {
       jobs.push(
         dag
           .container()
@@ -254,12 +348,12 @@ export class WorkstreamCi {
           .withExec([
             "sh",
             "-euc",
-            'set -- ansible/playbooks/*.yml; [ -e "$1" ] || exit 0; for playbook do ansible-playbook --syntax-check "$playbook" >/dev/null; done',
+            'for playbook in ansible/playbooks/*.yml ansible/playbooks/*.yaml; do [ -e "$playbook" ] || continue; ansible-playbook --syntax-check "$playbook" >/dev/null; done',
           ])
           .sync(),
       );
     }
-    if (entries.has("opentofu")) {
+    if (entries.has("opentofu") && (full || matches(files, ["opentofu/**"]))) {
       jobs.push(
         dag
           .container()
@@ -276,8 +370,49 @@ export class WorkstreamCi {
 
   @func()
   async platform(source: Directory): Promise<string> {
+    const canonicalSource = dag.directory().withNewFile(
+      "project.yaml",
+      `workstream:
+  version: 1
+  name: canonical-canary
+  category: software
+  lifecycle: active
+  ci:
+    lanes:
+      - name: application
+        image: ${NODE}
+        paths: ["**"]
+        setupCommands: []
+        pullRequestCommands: []
+        fullCommands: []
+`,
+    );
     await Promise.all([
-      this.trivy(source),
+      this.validate(
+        canonicalSource,
+        canonicalSource,
+        "software",
+        "full",
+        "a".repeat(40),
+      ),
+      this.trivy(source, {
+        version: 1,
+        name: "platform",
+        category: "software",
+        lifecycle: "active",
+        ci: {
+          lanes: [
+            {
+              name: "platform",
+              image: NODE,
+              paths: ["**"],
+              setupCommands: [],
+              pullRequestCommands: [],
+              fullCommands: [],
+            },
+          ],
+        },
+      }),
       dag
         .container()
         .from(PYTHON)
@@ -325,22 +460,57 @@ export class WorkstreamCi {
   @func()
   async validate(
     source: Directory,
+    contract: Directory,
     category: string,
-    commitSha = "",
+    stage: string,
+    commitSha: string,
+    changedFilesB64 = "",
   ): Promise<string> {
-    if (!CATEGORIES.has(category))
-      throw new Error(`unsupported workstream category: ${category}`);
-    const project = await this.project(source, category);
+    if (
+      !CATEGORIES.has(category) ||
+      !STAGES.has(stage) ||
+      !SHA.test(commitSha)
+    ) {
+      throw new Error("invalid category, stage, or commit SHA");
+    }
+    const project = await this.project(contract, category);
+    if (stage === "pull-request") {
+      const proposed = await this.project(source, category);
+      if (proposed.name !== project.name) {
+        throw new Error(
+          "proposed project identity differs from the trusted contract",
+        );
+      }
+    }
+    const files = stage === "full" ? [] : changedFiles(changedFilesB64);
+    const all =
+      stage === "full" || matches(files, project.ci.fullOnPaths ?? []);
+    const noNative =
+      !all &&
+      files.length > 0 &&
+      matches(files, project.ci.noNativePaths ?? []) &&
+      files.every((path) => matches([path], project.ci.noNativePaths ?? []));
+    const affected = project.ci.lanes.filter((lane) =>
+      matches(files, lane.paths),
+    );
+    const lanes = all
+      ? project.ci.lanes
+      : noNative
+        ? []
+        : affected.length
+          ? affected
+          : project.ci.lanes;
+    const effectiveStage = all ? "full" : stage;
     const jobs: Promise<unknown>[] = [
-      this.trivy(
-        source,
-        project.ci.trivySkipDirs ?? [],
-        project.ci.trivyBaseline,
+      this.trivy(source, project),
+      ...lanes.map((lane) =>
+        this.lane(source, project, lane, effectiveStage, commitSha, files),
       ),
-      this.native(source, project, commitSha),
     ];
-    if (category === "infrastructure") jobs.push(this.infrastructure(source));
+    if (category === "infrastructure") {
+      jobs.push(this.infrastructure(source, effectiveStage, files, all));
+    }
     await Promise.all(jobs);
-    return `${project.name}: canonical ${category} validation passed`;
+    return `${project.name}: ${stage} ${category} validation passed`;
   }
 }
