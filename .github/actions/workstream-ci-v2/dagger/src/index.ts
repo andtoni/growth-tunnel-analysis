@@ -74,7 +74,12 @@ function glob(pattern: string): RegExp {
     if (character === "*") {
       if (pattern[index + 1] === "*") {
         index += 1;
-        output += ".*";
+        if (pattern[index + 1] === "/") {
+          index += 1;
+          output += "(?:.*/)?";
+        } else {
+          output += ".*";
+        }
       } else {
         output += "[^/]*";
       }
@@ -162,10 +167,10 @@ export class WorkstreamCi {
     return project;
   }
 
-  private async legacyIdentity(
+  private async legacyProject(
     contract: Directory,
     category: string,
-  ): Promise<{ name: string; category: string }> {
+  ): Promise<Project> {
     const document = YAML.parse(
       await contract.file("project.yaml").contents(),
     ) as { workstream?: Project } & Project;
@@ -173,7 +178,10 @@ export class WorkstreamCi {
     const ci = project?.ci as unknown as {
       image?: string;
       commands?: unknown;
+      formatCommand?: unknown;
       lanes?: unknown;
+      trivySkipDirs?: string[];
+      trivyBaseline?: string;
     };
     if (
       project?.version !== 1 ||
@@ -182,11 +190,43 @@ export class WorkstreamCi {
       !ci ||
       !DIGEST.test(ci.image ?? "") ||
       !strings(ci.commands) ||
-      ci.lanes !== undefined
+      (ci.formatCommand !== undefined &&
+        (typeof ci.formatCommand !== "string" || !ci.formatCommand.trim())) ||
+      ci.lanes !== undefined ||
+      (ci.trivySkipDirs !== undefined &&
+        (!strings(ci.trivySkipDirs) ||
+          ci.trivySkipDirs.some((path) => !safeRelativePath(path)))) ||
+      (ci.trivyBaseline !== undefined &&
+        (typeof ci.trivyBaseline !== "string" ||
+          !safeRelativePath(ci.trivyBaseline)))
     ) {
       throw new Error("trusted project is not a supported legacy CI contract");
     }
-    return { name: project.name, category: project.category };
+    return {
+      version: project.version,
+      name: project.name,
+      category: project.category,
+      lifecycle: project.lifecycle,
+      ci: {
+        lanes: [
+          {
+            name: "legacy",
+            image: ci.image!,
+            paths: ["**"],
+            setupCommands: [],
+            pullRequestCommands: [
+              ...(ci.commands as string[]),
+              ...(typeof ci.formatCommand === "string"
+                ? [ci.formatCommand]
+                : []),
+            ],
+            fullCommands: [],
+          },
+        ],
+        trivySkipDirs: ci.trivySkipDirs,
+        trivyBaseline: ci.trivyBaseline,
+      },
+    };
   }
 
   private async trivy(source: Directory, project: Project): Promise<void> {
@@ -370,7 +410,7 @@ export class WorkstreamCi {
           .withExec([
             "sh",
             "-euc",
-            'set -- ansible/playbooks/*.yml; [ -e "$1" ] || exit 0; for playbook do ansible-playbook --syntax-check "$playbook" >/dev/null; done',
+            'for playbook in ansible/playbooks/*.yml ansible/playbooks/*.yaml; do [ -e "$playbook" ] || continue; ansible-playbook --syntax-check "$playbook" >/dev/null; done',
           ])
           .sync(),
       );
@@ -405,8 +445,8 @@ export class WorkstreamCi {
         image: ${NODE}
         paths: ["**"]
         setupCommands: []
-        pullRequestCommands: []
-        fullCommands: []
+        pullRequestCommands: ["false"]
+        fullCommands: ["false"]
 `,
     );
     const legacyContract = dag.directory().withNewFile(
@@ -418,7 +458,8 @@ export class WorkstreamCi {
   lifecycle: active
   ci:
     image: ${NODE}
-    commands: []
+    commands: ["true"]
+    formatCommand: "true"
 `,
     );
     await Promise.all([
@@ -516,14 +557,14 @@ export class WorkstreamCi {
       project = await this.project(contract, category);
     } catch (error) {
       if (!allowLegacyContract) throw error;
-      const trusted = await this.legacyIdentity(contract, category);
+      const trusted = await this.legacyProject(contract, category);
       const proposed = await this.project(source, category);
       if (proposed.name !== trusted.name) {
         throw new Error(
           "proposed project identity differs from the trusted legacy contract",
         );
       }
-      project = proposed;
+      project = trusted;
       proposedValidated = true;
     }
     if (stage === "pull-request" && !proposedValidated) {
@@ -552,14 +593,15 @@ export class WorkstreamCi {
         : affected.length
           ? affected
           : project.ci.lanes;
+    const effectiveStage = all ? "full" : stage;
     const jobs: Promise<unknown>[] = [
       this.trivy(source, project),
       ...lanes.map((lane) =>
-        this.lane(source, project, lane, stage, commitSha, files),
+        this.lane(source, project, lane, effectiveStage, commitSha, files),
       ),
     ];
     if (category === "infrastructure") {
-      jobs.push(this.infrastructure(source, stage, files, all));
+      jobs.push(this.infrastructure(source, effectiveStage, files, all));
     }
     await Promise.all(jobs);
     return `${project.name}: ${stage} ${category} validation passed`;
