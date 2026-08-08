@@ -218,7 +218,7 @@ pipeline = [
 
 [package.metadata]
 requires-dist = [
-    { name = "imageio", marker = "extra == 'pipeline'", specifier = "==2.34.0" },
+    { name = "imageio", marker = "extra == 'pipeline'", specifier = "==2.37.4" },
     { name = "matplotlib", marker = "extra == 'pipeline'", specifier = "==3.9.0" },
     { name = "networkx", marker = "extra == 'pipeline'", specifier = ">=3.0" },
     { name = "numpy", marker = "extra == 'pipeline'", specifier = "==1.26.4" },
@@ -256,15 +256,15 @@ wheels = [
 
 [[package]]
 name = "imageio"
-version = "2.34.0"
+version = "2.37.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy" },
     { name = "pillow" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c3/71/70f81a9c0cd3b106f6663af8d92402d16354abec48f7b8ba15a6c41ddca9/imageio-2.34.0.tar.gz", hash = "sha256:ae9732e10acf807a22c389aef193f42215718e16bd06eed0c5bb57e1034a4d53", size = 387471, upload-time = "2024-02-12T02:14:32.606Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/48/62/aa770a9307508d2a2a2c62d536a49347bffe9e55322db27838d3c93d0b07/imageio-2.37.4.tar.gz", hash = "sha256:e45cbc5e83502047fb138f7f585f7f105a136a57eea5f4b3cfc6ce1b52720bd3", size = 390173, upload-time = "2026-07-20T05:26:11.369Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/02/25/66533a8390e3763cf8254dee143dbf8a830391ea60d2762512ba7f9ddfbe/imageio-2.34.0-py3-none-any.whl", hash = "sha256:08082bf47ccb54843d9c73fe9fc8f3a88c72452ab676b58aca74f36167e8ccba", size = 313420, upload-time = "2024-02-12T02:14:29.372Z" },
+    { url = "https://files.pythonhosted.org/packages/3e/2d/ca050652104bab2cf55e569db2a178b1b61cb041fef28307f2db383f6d9f/imageio-2.37.4-py3-none-any.whl", hash = "sha256:1ab2e22c8debf700f24c3ac43e8f95f3b3a8110c83b93411e97b4b0b2cd1c7e6", size = 318000, upload-time = "2026-07-20T05:26:09.874Z" },
 ]
 
 [[package]]
