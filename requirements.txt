@@ -33,7 +33,7 @@ pandas==2.2.0
 tqdm==4.66.3
 
 # Script 04 — quantification export
-openpyxl==3.1.2
+openpyxl==3.1.5
 
 # Script 05 — pore/throat Prism export
 # (openpyxl and pandas already above)
