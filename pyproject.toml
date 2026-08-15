@@ -16,7 +16,7 @@ pipeline = [
   "openpyxl==3.1.5",
   "pandas==2.2.0",
   "porespy==2.2.0",
-  "pypardiso==0.4.6",
+  "pypardiso==0.4.7",
   "scikit-image==0.22.0",
   "scipy==1.13.1",
   "tqdm==4.66.3",
