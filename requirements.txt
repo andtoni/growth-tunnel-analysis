@@ -40,4 +40,4 @@ openpyxl==3.1.5
 
 # Optional — performance and extended analysis
 pypardiso==0.4.7
-networkx>=3.0
+networkx==3.6.1
