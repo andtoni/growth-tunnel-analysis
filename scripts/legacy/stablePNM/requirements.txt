@@ -55,7 +55,7 @@ six==1.17.0
 sympy==1.14.0
 tbb==2023.0.0
 tcmlib==1.5.0
-thermo==0.6.0
+thermo==0.6.1
 tifffile==2026.5.15
 tomli==2.4.1
 toolz==1.1.0
