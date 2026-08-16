@@ -12,7 +12,7 @@ pipeline = [
   "matplotlib==3.9.0",
   "networkx>=3.0",
   "numpy==1.26.4",
-  "openpnm==3.3.0",
+  "openpnm==3.6.4",
   "openpyxl==3.1.5",
   "pandas==2.2.0",
   "porespy==2.2.0",
