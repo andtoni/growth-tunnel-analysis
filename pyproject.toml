@@ -3,14 +3,14 @@ name = "growth-tunnel-analysis"
 version = "0.1.0"
 description = "Pore-network, confocal porosity, and mechanical analysis workflow for porous biomaterial scaffold characterisation."
 readme = "README.md"
-requires-python = ">=3.12,<3.13"
+requires-python = "==3.12.14"
 dependencies = []
 
 [project.optional-dependencies]
 pipeline = [
   "imageio==2.37.4",
   "matplotlib==3.9.0",
-  "networkx>=3.0",
+  "networkx==3.6.1",
   "numpy==1.26.4",
   "openpnm==3.3.0",
   "openpyxl==3.1.5",
@@ -22,8 +22,8 @@ pipeline = [
   "tqdm==4.66.3",
 ]
 dev = [
-  "pytest>=8.3",
-  "ruff>=0.9",
+  "pytest==9.1.1",
+  "ruff==0.16.0",
 ]
 
 [tool.uv]
