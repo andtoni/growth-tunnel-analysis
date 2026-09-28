@@ -58,9 +58,11 @@ jobs:
             Skip style preferences, speculation and restating what the change does.
 
             You are advisory. Do not approve, request changes, push commits or edit files.
-            Post exactly one top-level comment with `gh pr comment`, most severe finding
+            Start from `gh pr diff` and read only the files the change touches and what they depend on;
+            stop investigating once the findings are clear. Post exactly one top-level comment with
+            `gh pr comment`, most severe finding
             first, each with its file and line, and say plainly when you found nothing.
             Do not create inline review comments or review threads.
           claude_args: |
-            --max-turns 30
-            --allowedTools "Read,Grep,Glob,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
+            --max-turns 60
+            --allowedTools "Read,Grep,Glob,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git status:*)"
