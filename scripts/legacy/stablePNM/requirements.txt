@@ -32,7 +32,7 @@ networkx==3.6.1
 numba==0.65.1
 numpy==2.4.6
 onemkl-license==2026.0.0
-openpnm==3.6.3
+openpnm==3.6.4
 packaging==26.2
 pandas==3.0.3
 partd==1.4.2
