@@ -3,7 +3,7 @@
 # =============================================================================
 # Author:      Andrea Tonelli (tnland001@myuct.ac.za)
 # ORCID:       https://orcid.org/0000-0002-1601-4103
-# Repository:  https://git.stilltarn.com/admin1/growth-tunnel-analysis
+# Repository:  https://github.com/andtoni/growth-tunnel-analysis
 #
 # Run this before any pipeline script to verify your Python environment.
 #
@@ -16,7 +16,7 @@ import sys
 print("=" * 60)
 print("Pore Network Analysis Pipeline — Environment Verification")
 print("Tonelli A. — University of Cape Town — 2025")
-print("https://git.stilltarn.com/admin1/growth-tunnel-analysis")
+print("https://github.com/andtoni/growth-tunnel-analysis")
 print("=" * 60)
 
 errors   = []

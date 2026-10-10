@@ -18,23 +18,6 @@ Uses [PoreSpy](https://github.com/PMEAL/porespy) and [OpenPNM](https://github.co
 
 Please cite this paper and the code repository if you use the pipeline (see [CITATION.cff](CITATION.cff)).
 
-## Local Canonical Repository
-
-Forgejo is the canonical working remote on this workstation:
-
-```bash
-git clone https://git.stilltarn.com/admin1/growth-tunnel-analysis.git
-cd growth-tunnel-analysis
-uv sync --extra pipeline
-uv run --extra pipeline python verify_environment.py
-```
-
-Paper material, generated analysis artefacts, manuscript files, Prism projects, mechanical-testing workbooks, and raw data live outside Git at:
-
-`/home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis`
-
----
-
 ## Table of Contents
 
 1. [Pipeline Overview](#1-pipeline-overview)
@@ -141,7 +124,7 @@ The only requirement is that the µCT image can be binarised into **pore space (
 ### 3.1 Clone and Install
 
 ```bash
-git clone https://git.stilltarn.com/admin1/growth-tunnel-analysis.git
+git clone https://github.com/andtoni/growth-tunnel-analysis.git
 cd growth-tunnel-analysis
 uv sync --extra pipeline
 ```
@@ -361,7 +344,7 @@ Released under the **MIT Licence** (see [LICENSE](LICENSE)).
 **Andrea Tonelli** · University of Cape Town
 tnland001@myuct.ac.za · ORCID: [0000-0002-1601-4103](https://orcid.org/0000-0002-1601-4103)
 
-For questions about adapting this pipeline to other porous materials, use the canonical Forgejo repository or contact the author.
+For questions about adapting this pipeline to other porous materials, open an issue on GitHub or contact the author.
 
 ---
 
