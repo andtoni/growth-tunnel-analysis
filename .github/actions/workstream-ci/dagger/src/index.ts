@@ -128,7 +128,7 @@ export class WorkstreamCi {
     if (
       project?.version !== 1 ||
       !project.name ||
-      !/^[a-z0-9][a-z0-9-]*$/.test(project.name) ||
+      !/^[a-z0-9][a-z0-9_-]*$/.test(project.name) ||
       !CATEGORIES.has(project.category) ||
       project.category !== category ||
       !ci ||
@@ -305,6 +305,7 @@ export class WorkstreamCi {
       .withDirectory("/src", source)
       .withWorkdir("/src")
       .withEnvVariable("CI", "true")
+      .withEnvVariable("CARGO_BUILD_JOBS", "1")
       .withEnvVariable("CI_STAGE", stage)
       .withEnvVariable("CI_COMMIT_SHA", commitSha)
       .withNewFile("/tmp/changed-files.json", JSON.stringify(files), {
@@ -501,16 +502,23 @@ export class WorkstreamCi {
           ? affected
           : project.ci.lanes;
     const effectiveStage = all ? "full" : stage;
-    const jobs: Promise<unknown>[] = [
-      this.trivy(source, project),
-      ...lanes.map((lane) =>
-        this.lane(source, project, lane, effectiveStage, commitSha, files),
-      ),
-    ];
-    if (category === "infrastructure") {
-      jobs.push(this.infrastructure(source, effectiveStage, files, all));
+    await this.trivy(source, project);
+    // Keep a bounded per-job fan-out: the runner capacity contract admits two
+    // concurrent Dagger jobs, and each job may run two independent lanes. Rust
+    // lanes remain memory-bounded by CARGO_BUILD_JOBS=1 in lane().
+    const maxConcurrentLanes = 2;
+    for (let offset = 0; offset < lanes.length; offset += maxConcurrentLanes) {
+      await Promise.all(
+        lanes
+          .slice(offset, offset + maxConcurrentLanes)
+          .map((lane) =>
+            this.lane(source, project, lane, effectiveStage, commitSha, files),
+          ),
+      );
     }
-    await Promise.all(jobs);
+    if (category === "infrastructure") {
+      await this.infrastructure(source, effectiveStage, files, all);
+    }
     return `${project.name}: ${stage} ${category} validation passed`;
   }
 }
