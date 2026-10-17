@@ -4,8 +4,7 @@ Purpose: reproducible paper/code project for the pore-network, confocal porosity
 
 Hard rules:
 - Use `uv` for Python. Never use pip, conda, poetry, pipenv, virtualenv, or `python -m venv`.
-- Forgejo is canonical: `https://git.stilltarn.com/admin1/growth-tunnel-analysis.git`.
-- Do not add GitHub remotes.
+- GitHub `andtoni/growth-tunnel-analysis` is canonical. Preserve the repository's history and use its protected GitHub workflow.
 - Do not commit raw micro-CT stacks, CZI files, `.raw` Instron exports, generated SNOW2 `.pkl`, VTK/VTP/VTI volumes, Prism files, DOCX/PDF exports, or secrets.
 - Project material lives at `/home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis`.
 - Treat root scripts `01_*` to `05_*`, legacy scripts under `scripts/legacy/`, editable SVG/PVSM sources, and documentation as source.
