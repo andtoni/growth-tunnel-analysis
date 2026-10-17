@@ -13,7 +13,8 @@ concurrency:
 jobs:
   review:
     name: claude-review
-    if: github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository
+    # The action refuses bot authors, and a model review of a version bump adds nothing.
+    if: github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.user.login != 'renovate[bot]'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
@@ -36,7 +37,7 @@ jobs:
           persist-credentials: false
 
       - name: Advisory review
-        uses: anthropics/claude-code-action@756cc22e19660d20e8cc9496b4f242475a7f7790 # v1.0.235
+        uses: anthropics/claude-code-action@f27be6b65a4652f08a2ba3cff79114829b588967 # v1.0.252
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           use_sticky_comment: true
