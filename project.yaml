@@ -11,14 +11,13 @@ workstream:
   ci:
     fullOnPaths:
     - project.yaml
-    - .github/**
-    - '*lock*'
-    - '**/*lock*'
     noNativePaths:
     - docs/**
     - '*.md'
     - '**/*.md'
     - artifacts/**
+    - .github/**
+    - renovate.json
     trivySkipDirs:
     - scripts/legacy
     lanes:
@@ -32,6 +31,8 @@ workstream:
       - uv.lock
       - verify_environment.py
       - 0*.py
+      fullOnPaths:
+      - uv.lock
       setupCommands: []
       pullRequestCommands:
       - uv lock --check
