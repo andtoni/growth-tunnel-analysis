@@ -20,3 +20,4 @@ make status
 make check
 sed -n '1,220p' docs/START_HERE.md
 ```
+- Merge a pull request only after the Claude review has posted its comment; fix or answer every finding first.
