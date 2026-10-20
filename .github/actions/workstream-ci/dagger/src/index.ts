@@ -18,6 +18,7 @@ type Lane = {
   name: string;
   image: string;
   paths: string[];
+  fullOnPaths?: string[];
   setupCommands: string[];
   pullRequestCommands: string[];
   fullCommands: string[];
@@ -145,7 +146,10 @@ export class WorkstreamCi {
           !strings(lane.setupCommands) ||
           !strings(lane.pullRequestCommands) ||
           !strings(lane.fullCommands) ||
-          lane.paths.some((path) => !safeGlob(path)),
+          lane.paths.some((path) => !safeGlob(path)) ||
+          (lane.fullOnPaths !== undefined &&
+            (!strings(lane.fullOnPaths) ||
+              lane.fullOnPaths.some((path) => !safeGlob(path)))),
       ) ||
       (ci.fullOnPaths !== undefined &&
         (!strings(ci.fullOnPaths) ||
@@ -502,6 +506,8 @@ export class WorkstreamCi {
           ? affected
           : project.ci.lanes;
     const effectiveStage = all ? "full" : stage;
+    const laneStage = (lane: Lane) =>
+      all || matches(files, lane.fullOnPaths ?? []) ? "full" : stage;
     await this.trivy(source, project);
     // Keep a bounded per-job fan-out: the runner capacity contract admits two
     // concurrent Dagger jobs, and each job may run two independent lanes. Rust
@@ -512,7 +518,7 @@ export class WorkstreamCi {
         lanes
           .slice(offset, offset + maxConcurrentLanes)
           .map((lane) =>
-            this.lane(source, project, lane, effectiveStage, commitSha, files),
+            this.lane(source, project, lane, laneStage(lane), commitSha, files),
           ),
       );
     }
