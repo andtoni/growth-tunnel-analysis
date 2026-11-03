@@ -15,8 +15,8 @@ from skimage.io import imread_collection
 sample_name   = "SR-Pel20"
 voxel_size    = 0.54
 threshold     = 50
-image_path    = rf"C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\{sample_name}\SR-p20-REV\*.tiff"
-base_data_dir = r"C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\codeoutput"
+image_path    = rf"C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\{sample_name}\SR-p20-REV\*.tiff"
+base_data_dir = r"C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\codeoutput"
 # ═══════════════════════════════════════════════════════════════════════════════
 #ENSURE SAMPLE NAME SAME FOR SNOW AND NETWORK SCRIPTS, ensure directories are correct
 

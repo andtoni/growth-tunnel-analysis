@@ -35477,11 +35477,11 @@
     </Proxy>
     <Proxy group="sources" type="XMLPolyDataReader" id="13454" servers="1">
       <Property name="FileName" id="13454.FileName" number_of_elements="1">
-        <Element index="0" value="C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\SR-Pel16\growthtunnel.vtp"/>
+        <Element index="0" value="C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\SR-Pel16\growthtunnel.vtp"/>
         <Domain name="files" id="13454.FileName.files"/>
       </Property>
       <Property name="FileNameInfo" id="13454.FileNameInfo" number_of_elements="1">
-        <Element index="0" value="C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\SR-Pel16\growthtunnel.vtp"/>
+        <Element index="0" value="C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\SR-Pel16\growthtunnel.vtp"/>
       </Property>
       <Property name="TimestepValues" id="13454.TimestepValues"/>
       <Property name="CellArrayInfo" id="13454.CellArrayInfo" number_of_elements="28">
@@ -35706,7 +35706,7 @@
     </Proxy>
     <Proxy group="sources" type="TIFFSeriesReader" id="13191" servers="1">
       <Property name="FileNames" id="13191.FileNames" number_of_elements="1">
-        <Element index="0" value="C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\SR-Pel16\image.tif"/>
+        <Element index="0" value="C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\SR-Pel16\image.tif"/>
         <Domain name="files" id="13191.FileNames.files"/>
       </Property>
       <Property name="ReadAsImageStack" id="13191.ReadAsImageStack" number_of_elements="1">
@@ -35732,7 +35732,7 @@
     </Proxy>
     <Proxy group="sources" type="TIFFSeriesReader" id="16014" servers="1">
       <Property name="FileNames" id="16014.FileNames" number_of_elements="1">
-        <Element index="0" value="C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\SR-Pel16\image2.tif"/>
+        <Element index="0" value="C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\SR-Pel16\image2.tif"/>
         <Domain name="files" id="16014.FileNames.files"/>
       </Property>
       <Property name="ReadAsImageStack" id="16014.ReadAsImageStack" number_of_elements="1">
@@ -35758,11 +35758,11 @@
     </Proxy>
     <Proxy group="sources" type="XMLPolyDataReader" id="14755" servers="1">
       <Property name="FileName" id="14755.FileName" number_of_elements="1">
-        <Element index="0" value="C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\SR-Pel16\proj_02.vtp"/>
+        <Element index="0" value="C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\SR-Pel16\proj_02.vtp"/>
         <Domain name="files" id="14755.FileName.files"/>
       </Property>
       <Property name="FileNameInfo" id="14755.FileNameInfo" number_of_elements="1">
-        <Element index="0" value="C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\SR-Pel16\proj_02.vtp"/>
+        <Element index="0" value="C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\SR-Pel16\proj_02.vtp"/>
       </Property>
       <Property name="TimestepValues" id="14755.TimestepValues"/>
       <Property name="CellArrayInfo" id="14755.CellArrayInfo" number_of_elements="14">

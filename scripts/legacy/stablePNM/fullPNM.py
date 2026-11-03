@@ -40,13 +40,13 @@ import glob
 
 # Full path to the reference template PVSM (p16.pvsm)
 # Use forward slashes or raw strings for Windows paths
-TEMPLATE_PVSM = r"C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\codeoutput\Full Networks\p16.pvsm"
+TEMPLATE_PVSM = r"C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\codeoutput\Full Networks\p16.pvsm"
 
 # Directory containing all VTP files and TIFF subfolders
 # This folder should contain:
 #   p16.vtp, p18.vtp, p20.vtp ...    ← VTP pore network files
 #   SR-p16-REV\, SR-p18-REV\, ...   ← TIFF series subfolders (one per sample)
-BASE_DIR = r"C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\codeoutput\Full Networks"
+BASE_DIR = r"C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\codeoutput\Full Networks"
 
 # Output directory for generated PVSM files (can be same as BASE_DIR)
 OUTPUT_DIR = BASE_DIR

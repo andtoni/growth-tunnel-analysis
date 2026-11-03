@@ -20,7 +20,7 @@ from paraview.simple import *
 
 # Root folder containing all sample output folders
 # Structure: base_data_dir \ sample_name \ outputs \ run_label \ files
-base_data_dir = r"C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\codeoutput"
+base_data_dir = r"C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\codeoutput"
 
 # Sample folder names — add or remove as needed
 samples = [

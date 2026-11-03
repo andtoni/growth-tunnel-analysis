@@ -23,8 +23,8 @@
 // USER SETTINGS
 // =============================================================================
 
-INPUT_DIR  = "C:/Users/andto/OneDrive/Desktop/University/PhD/DATA/Transmural Space Characterisation/3D Analysis Paper/codeoutput/Full Networks/Before/";
-OUTPUT_DIR = "C:/Users/andto/OneDrive/Desktop/University/PhD/DATA/Transmural Space Characterisation/3D Analysis Paper/codeoutput/Full Networks/After/";
+INPUT_DIR  = "C:/Users/<user>/OneDrive/Desktop/University/PhD/DATA/Transmural Space Characterisation/3D Analysis Paper/codeoutput/Full Networks/Before/";
+OUTPUT_DIR = "C:/Users/<user>/OneDrive/Desktop/University/PhD/DATA/Transmural Space Characterisation/3D Analysis Paper/codeoutput/Full Networks/After/";
 
 // Physical width of the ORIGINAL image in micrometres (um)
 IMAGE_WIDTH_UM = 224.92;

@@ -74,7 +74,7 @@ from openpyxl.utils import get_column_letter
 # =============================================================================
 
 # Must match base_data_dir in run_snow2_only.py and run_network_analysis_v2.py
-base_data_dir = r"C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\codeoutput"
+base_data_dir = r"C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\codeoutput"
 
 # Sample names — must match sample_name values in the original scripts
 samples = [
