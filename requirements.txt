@@ -1,6 +1,6 @@
 # Pore Network Analysis Pipeline — Python Dependencies
 # Author: Andrea Tonelli — University of Cape Town — 2025
-# Canonical Forgejo repository: https://git.stilltarn.com/admin1/growth-tunnel-analysis
+# Repository: https://github.com/andtoni/growth-tunnel-analysis
 #
 # Install with:
 #   uv sync --extra pipeline

@@ -1,6 +1,6 @@
 # =============================================================================
 # .gitignore — Pore Network Analysis Pipeline
-# Author: Andrea Tonelli — https://git.stilltarn.com/admin1/growth-tunnel-analysis
+# Author: Andrea Tonelli — https://github.com/andtoni/growth-tunnel-analysis
 # =============================================================================
 # Large data files are excluded from the repository.
 # Store raw data and outputs on local or institutional storage.

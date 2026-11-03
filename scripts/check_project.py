@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MATERIAL = Path("/home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis")
+MATERIAL = Path(os.environ.get("GTA_MATERIAL", "material-not-set"))
 
 REQUIRED_REPO_PATHS = [
     "AGENTS.md",
@@ -118,15 +119,10 @@ def git_lines(args: list[str]) -> list[str]:
 
 def check_remote() -> bool:
     remotes = git_lines(["git", "remote", "-v"])
-    bad = [line for line in remotes if "github.com" in line.lower()]
     for line in remotes:
         print(f"remote {line}")
-    if bad:
-        print("forbidden GitHub remote detected")
-        return False
-    expected = "https://git.stilltarn.com/admin1/growth-tunnel-analysis.git"
-    ok = any(expected in line for line in remotes)
-    print(f"{'ok' if ok else 'missing'} Forgejo origin")
+    ok = any("andtoni/growth-tunnel-analysis" in line for line in remotes)
+    print(f"{'ok' if ok else 'missing'} GitHub origin")
     return ok
 
 

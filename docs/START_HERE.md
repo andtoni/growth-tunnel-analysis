@@ -3,7 +3,7 @@
 Use this entrypoint after any break.
 
 ```bash
-cd /home/andto/coding/papers/growth-tunnel-analysis
+cd growth-tunnel-analysis
 make status
 make check
 ```
@@ -19,9 +19,9 @@ tail -n 20 RUNS.jsonl
 
 ## Where Things Live
 
-- Code: `/home/andto/coding/papers/growth-tunnel-analysis`
-- Material: `/home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis`
-- Canonical remote: `https://git.stilltarn.com/admin1/growth-tunnel-analysis.git`
+- Code: `growth-tunnel-analysis`
+- Material: `$GTA_MATERIAL`
+- Canonical remote: `https://github.com/andtoni/growth-tunnel-analysis.git`
 
 ## Critical Material Roots
 

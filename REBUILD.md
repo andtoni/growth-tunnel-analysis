@@ -3,7 +3,7 @@
 From this workstation:
 
 ```bash
-cd /home/andto/coding/papers/growth-tunnel-analysis
+cd growth-tunnel-analysis
 uv sync
 make check
 ```
@@ -18,7 +18,7 @@ uv run --extra pipeline python verify_environment.py
 The raw data and generated paper artefacts are external to Git:
 
 ```bash
-ls "/home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis"
+ls "$GTA_MATERIAL"
 ```
 
 Do not restore from the old `Archive/OneDrive` paths. They were moved into the clean project directory on 2026-07-06.

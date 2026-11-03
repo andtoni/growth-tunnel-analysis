@@ -1,7 +1,7 @@
 # =============================================================================
 # Script 04 — Pore Network Quantification and Excel Export (v2)
 # =============================================================================
-# Author:      Andrea Tonelli (tnland001@myuct.ac.za)
+# Author:      Andrea Tonelli (ORCID 0000-0002-1601-4103)
 # ORCID:       https://orcid.org/0000-0002-1601-4103
 # Institution: University of Cape Town
 # Repository:  https://github.com/andtoni/growth-tunnel-analysis

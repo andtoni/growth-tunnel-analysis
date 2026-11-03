@@ -1,7 +1,7 @@
 # =============================================================================
 # Confocal Porosity — CZI Z-Stack Batch Analysis
 # =============================================================================
-# Author:      Andrea Tonelli (tnland001@myuct.ac.za)
+# Author:      Andrea Tonelli (ORCID 0000-0002-1601-4103)
 # Institution: University of Cape Town
 #
 # Description:
