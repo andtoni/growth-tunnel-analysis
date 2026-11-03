@@ -1,7 +1,7 @@
 // =============================================================================
 // Add Scale Bars to Images — Fiji/ImageJ Macro
 // =============================================================================
-// Author:      Andrea Tonelli (tnland001@myuct.ac.za)
+// Author:      Andrea Tonelli (ORCID 0000-0002-1601-4103)
 // ORCID:       https://orcid.org/0000-0002-1601-4103
 // Institution: University of Cape Town
 // Repository:  https://github.com/andtoni/growth-tunnel-analysis
@@ -23,8 +23,8 @@
 // USER SETTINGS
 // =============================================================================
 
-INPUT_DIR  = "C:/Users/andto/OneDrive/Desktop/University/PhD/DATA/Transmural Space Characterisation/3D Analysis Paper/codeoutput/Full Networks/Before/";
-OUTPUT_DIR = "C:/Users/andto/OneDrive/Desktop/University/PhD/DATA/Transmural Space Characterisation/3D Analysis Paper/codeoutput/Full Networks/After/";
+INPUT_DIR  = "C:/Users/<user>/OneDrive/Desktop/University/PhD/DATA/Transmural Space Characterisation/3D Analysis Paper/codeoutput/Full Networks/Before/";
+OUTPUT_DIR = "C:/Users/<user>/OneDrive/Desktop/University/PhD/DATA/Transmural Space Characterisation/3D Analysis Paper/codeoutput/Full Networks/After/";
 
 // Physical width of the ORIGINAL image in micrometres (um)
 IMAGE_WIDTH_UM = 224.92;

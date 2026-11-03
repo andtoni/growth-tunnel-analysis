@@ -1,7 +1,7 @@
 # =============================================================================
 # Script 04 — Pore Network Quantification and Excel Export (v2)
 # =============================================================================
-# Author:      Andrea Tonelli (tnland001@myuct.ac.za)
+# Author:      Andrea Tonelli (ORCID 0000-0002-1601-4103)
 # ORCID:       https://orcid.org/0000-0002-1601-4103
 # Institution: University of Cape Town
 # Repository:  https://github.com/andtoni/growth-tunnel-analysis
@@ -74,7 +74,7 @@ from openpyxl.utils import get_column_letter
 # =============================================================================
 
 # Must match base_data_dir in run_snow2_only.py and run_network_analysis_v2.py
-base_data_dir = r"C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\codeoutput"
+base_data_dir = r"C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\codeoutput"
 
 # Sample names — must match sample_name values in the original scripts
 samples = [

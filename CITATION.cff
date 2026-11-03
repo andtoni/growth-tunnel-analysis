@@ -5,14 +5,13 @@ authors:
     given-names: "Andrea"
     orcid: "https://orcid.org/0000-0002-1601-4103"
     affiliation: "University of Cape Town"
-    email: "tnland001@myuct.ac.za"
 title: "Pore Network Analysis Pipeline for Electrospun Scaffolds"
 version: 1.0.0
 date-released: 2025-05-20
 doi: 10.5281/zenodo.20308262
-url: "https://git.stilltarn.com/admin1/growth-tunnel-analysis"
+url: "https://github.com/andtoni/growth-tunnel-analysis"
 license: MIT
-repository-code: "https://git.stilltarn.com/admin1/growth-tunnel-analysis"
+repository-code: "https://github.com/andtoni/growth-tunnel-analysis"
 abstract: >
   A Python pipeline for extracting and analysing pore networks from micro-CT
   scans of electrospun scaffolds. Uses PoreSpy and OpenPNM for SNOW2-based
@@ -39,11 +38,21 @@ preferred-citation:
       given-names: "Andrea"
       orcid: "https://orcid.org/0000-0002-1601-4103"
       affiliation: "University of Cape Town"
-  title: "In vivo validation of multimodality pore-network modelling to identify angio-permissive scaffold porosity"
-  year: 2025
-  url: "https://dx.doi.org/10.2139/ssrn.6664677"
-  doi: "10.2139/ssrn.6664677"
-  notes: "Preprint available via SSRN"
+    - family-names: "Iacoviello"
+      given-names: "Francesco"
+    - family-names: "Theron"
+      given-names: "Jaco"
+    - family-names: "Pennel"
+      given-names: "Timothy"
+    - family-names: "Zilla"
+      given-names: "Peter"
+  title: "In vivo validation of multimodality pore-network modeling to identify angio-permissive scaffold porosity"
+  journal: "Materials Today Bio"
+  volume: 39
+  start: 103377
+  year: 2026
+  doi: "10.1016/j.mtbio.2026.103377"
+  url: "https://doi.org/10.1016/j.mtbio.2026.103377"
 references:
   - type: article
     authors:

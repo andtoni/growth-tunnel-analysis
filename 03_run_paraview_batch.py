@@ -1,10 +1,10 @@
 # =============================================================================
 # Script 03 — ParaView Batch Visualisation
 # =============================================================================
-# Author:      Andrea Tonelli (tnland001@myuct.ac.za)
+# Author:      Andrea Tonelli (ORCID 0000-0002-1601-4103)
 # ORCID:       https://orcid.org/0000-0002-1601-4103
 # Institution: University of Cape Town
-# Repository:  https://git.stilltarn.com/admin1/growth-tunnel-analysis
+# Repository:  https://github.com/andtoni/growth-tunnel-analysis
 # Preprint:    https://dx.doi.org/10.2139/ssrn.6664677
 #
 # Description:
@@ -523,7 +523,7 @@ def run_visualization(run_dir, sample, run_label):
 print("=" * 65)
 print("ParaView Batch Visualisation")
 print("Tonelli A. — University of Cape Town — 2025")
-print("https://git.stilltarn.com/admin1/growth-tunnel-analysis")
+print("https://github.com/andtoni/growth-tunnel-analysis")
 print("=" * 65)
 print(f"Data directory: {data_dir}")
 print(f"Samples:        {samples}")

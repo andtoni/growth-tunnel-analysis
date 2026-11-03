@@ -32,7 +32,7 @@ os.makedirs(output_dir, exist_ok=True)
 
 # ── Load Images ───────────────────────────────────────────────────────────────
 log("Loading images...")
-seq = imread_collection("C:\\Users\\andto\\OneDrive\\Desktop\\University\\PhD\\DATA\\Transmural Space Characterisation\\3D Analysis Paper\\SR-Pel16\\SR-p16-REV\\*.tiff")
+seq = imread_collection("C:\\Users\\<user>\\OneDrive\\Desktop\\University\\PhD\\DATA\\Transmural Space Characterisation\\3D Analysis Paper\\SR-Pel16\\SR-p16-REV\\*.tiff")
 log(f"Loaded {len(seq)} slices")
 
 fig, ax = subplots(figsize=[5, 5])
@@ -85,6 +85,6 @@ log("SNOW2 complete!")
 
 import pickle
 log("Saving SNOW2 output to disk...")
-with open(r"C:\Users\andto\OneDrive\Desktop\University\Coding\stablePNM\outputs\snow2_output.pkl", "wb") as f:
+with open(r"C:\Users\<user>\OneDrive\Desktop\University\Coding\stablePNM\outputs\snow2_output.pkl", "wb") as f:
     pickle.dump(snow_output, f)
 log("Saved: snow2_output.pkl")

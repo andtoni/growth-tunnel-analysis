@@ -18,7 +18,7 @@ from datetime import datetime
 sample_name      = "SR-Pel20"
 pore_threshold   = 15       # um
 throat_threshold = 15       # um
-base_data_dir    = r"C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\codeoutput"
+base_data_dir    = r"C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\codeoutput"
 
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -200,7 +200,7 @@ imageio.volsave(os.path.join(output_dir, "image2.tif"),
 log("Saved: image.tif (fibres) and image2.tif (pores)")
 
 # ── Update pvsm for this run ──────────────────────────────────────────────────
-pvsm_template = r"C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\SR-Pel16\p16SR.pvsm"
+pvsm_template = r"C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\SR-Pel16\p16SR.pvsm"
 
 if os.path.exists(pvsm_template):
     log("Generating updated pvsm for ParaView...")

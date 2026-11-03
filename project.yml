@@ -2,34 +2,33 @@ project:
   slug: growth-tunnel-analysis
   title: "Growth Tunnel Analysis"
   profile: imaging-paper
-  target_journal: "Published/preprint-associated; confirm final venue"
+  target_journal: "Materials Today Bio (published 2026, doi:10.1016/j.mtbio.2026.103377)"
   timezone: Africa/Johannesburg
-  canonical_remote: https://git.stilltarn.com/admin1/growth-tunnel-analysis.git
-  archived_remote_note: "Old Paper 2/Git checkout pointed at GitHub; Forgejo is now canonical."
+  canonical_remote: https://github.com/andtoni/growth-tunnel-analysis.git
 
 locations:
-  code_repo: /home/andto/coding/papers/growth-tunnel-analysis
-  project_material: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis
+  code_repo: growth-tunnel-analysis
+  project_material: "the GTA_MATERIAL environment variable; paths below marked material are relative to it"
   rule: "Keep Git code in code_repo; keep raw data, manuscript artefacts, Prism projects, and generated outputs in project_material."
 
 data_roots:
   - label: transmural_3d_analysis_archive
-    path: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/transmural-space-characterisation-3d-analysis-paper
+    path: Original/transmural-space-characterisation-3d-analysis-paper
     immutable: true
     tracked_by: external-nextcloud
     contents: "Micro-CT/PNM/porosity/tortuosity/permeability/viscosity/thermal/figure material and generated outputs."
   - label: paper_2_manuscript_extra_analysis
-    path: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/paper-2-manuscript-and-extra-analysis
+    path: Original/paper-2-manuscript-and-extra-analysis
     immutable: true
     tracked_by: external-nextcloud
     contents: "Manuscript files, extra analysis, mechanical raw files, mechanical data summary, Prism project, figure panels."
   - label: system_coding_mirror_legacy
-    path: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/_legacy/system-coding-mirror
+    path: _legacy/system-coding-mirror
     immutable: true
     tracked_by: external-nextcloud
     contents: "Original migration-era stablePNM, confocalPorosity, and ImageJ macro folders after code copies were filed into Git."
   - label: mtbio_revision_package_2026_06
-    path: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Manuscript/mtbio-d-26-02595-revision-package-2026-06
+    path: Manuscript/mtbio-d-26-02595-revision-package-2026-06
     immutable: true
     tracked_by: external-nextcloud
     contents: "Full MTBIO-D-26-02595 manuscript revision package: v1/v2/v3 manuscripts, tracked/clean files, reviewer comments, point-by-point responses, cover letters, final figure PDFs, graph SVGs, Prism projects, statistical XML exports, and figure raw-data workbooks."
@@ -51,25 +50,25 @@ code_sources:
 
 critical_material:
   mechanical:
-    summary: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Mechanical Data Summary.xlsx
-    raw_dir: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Mechanical
+    summary: Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Mechanical Data Summary.xlsx
+    raw_dir: Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Mechanical
     vba: scripts/legacy/mechanical/InstronAnalysis.bas
-    table_docx: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Table for Mechanical Properties.docx
-    svg_table: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/mechanical_anisotropy_svg_table.svg
+    table_docx: Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Table for Mechanical Properties.docx
+    svg_table: Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/mechanical_anisotropy_svg_table.svg
   confocal_porosity:
     script: scripts/legacy/confocal-porosity/confocal_porosity.py
-    output: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/transmural-space-characterisation-3d-analysis-paper/Porosity/Confocal/porosity_output
+    output: Original/transmural-space-characterisation-3d-analysis-paper/Porosity/Confocal/porosity_output
   pore_network:
-    quantification_workbook: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/transmural-space-characterisation-3d-analysis-paper/codeoutput/Pore_Network_Quantification.xlsx
-    prism_grouped_workbook: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/transmural-space-characterisation-3d-analysis-paper/codeoutput/PNM_Prism_Grouped.xlsx
+    quantification_workbook: Original/transmural-space-characterisation-3d-analysis-paper/codeoutput/Pore_Network_Quantification.xlsx
+    prism_grouped_workbook: Original/transmural-space-characterisation-3d-analysis-paper/codeoutput/PNM_Prism_Grouped.xlsx
   manuscript_revision:
-    package: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Manuscript/mtbio-d-26-02595-revision-package-2026-06
-    latest_clean_manuscript: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Manuscript/mtbio-d-26-02595-revision-package-2026-06/paper2_v3_clean.docx
-    latest_tracked_manuscript: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Manuscript/mtbio-d-26-02595-revision-package-2026-06/paper2_v3_tracked.docx
-    latest_response_to_reviewers: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Manuscript/mtbio-d-26-02595-revision-package-2026-06/detailedreviewerresponses_v3.docx
-    latest_cover_letter: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Manuscript/mtbio-d-26-02595-revision-package-2026-06/coverletter_v3.docx
-    original_reviewer_comments: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Manuscript/mtbio-d-26-02595-revision-package-2026-06/Reviewer Comments Original.docx
-    checksum_manifest: /home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Manuscript/manifests/mtbio-d-26-02595-revision-package-2026-06.sha256
+    package: Manuscript/mtbio-d-26-02595-revision-package-2026-06
+    latest_clean_manuscript: Manuscript/mtbio-d-26-02595-revision-package-2026-06/paper2_v3_clean.docx
+    latest_tracked_manuscript: Manuscript/mtbio-d-26-02595-revision-package-2026-06/paper2_v3_tracked.docx
+    latest_response_to_reviewers: Manuscript/mtbio-d-26-02595-revision-package-2026-06/detailedreviewerresponses_v3.docx
+    latest_cover_letter: Manuscript/mtbio-d-26-02595-revision-package-2026-06/coverletter_v3.docx
+    original_reviewer_comments: Manuscript/mtbio-d-26-02595-revision-package-2026-06/Reviewer Comments Original.docx
+    checksum_manifest: Manuscript/manifests/mtbio-d-26-02595-revision-package-2026-06.sha256
 
 workflow:
   check: make check

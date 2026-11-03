@@ -1,7 +1,7 @@
 # Pore Network Analysis Pipeline for Porous Biomaterials
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20308262.svg)](https://doi.org/10.5281/zenodo.20308262)
-[![Preprint](https://img.shields.io/badge/Preprint-SSRN-orange)](https://dx.doi.org/10.2139/ssrn.6664677)
+[![Paper](https://img.shields.io/badge/Paper-Materials%20Today%20Bio-blue)](https://doi.org/10.1016/j.mtbio.2026.103377)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
 [![ORCID](https://img.shields.io/badge/ORCID-0000--0002--1601--4103-green)](https://orcid.org/0000-0002-1601-4103)
@@ -14,24 +14,15 @@ Uses [PoreSpy](https://github.com/PMEAL/porespy) and [OpenPNM](https://github.co
 
 ## Associated Publication
 
-> **Tonelli, A.** et al. (2025). *In vivo validation of multimodality pore-network modelling to identify angio-permissive scaffold porosity.* Preprint: [https://dx.doi.org/10.2139/ssrn.6664677](https://dx.doi.org/10.2139/ssrn.6664677)
+> **Tonelli, A.**, Iacoviello, F., Theron, J., Pennel, T. and Zilla, P. (2026). *In vivo validation of multimodality pore-network modeling to identify angio-permissive scaffold porosity.* Materials Today Bio, 39, 103377. [doi:10.1016/j.mtbio.2026.103377](https://doi.org/10.1016/j.mtbio.2026.103377)
+>
+> Earlier preprint: [doi:10.2139/ssrn.6664677](https://dx.doi.org/10.2139/ssrn.6664677)
 
 Please cite this paper and the code repository if you use the pipeline (see [CITATION.cff](CITATION.cff)).
 
-## Local Canonical Repository
+## Data
 
-Forgejo is the canonical working remote on this workstation:
-
-```bash
-git clone https://git.stilltarn.com/admin1/growth-tunnel-analysis.git
-cd growth-tunnel-analysis
-uv sync --extra pipeline
-uv run --extra pipeline python verify_environment.py
-```
-
-Paper material, generated analysis artefacts, manuscript files, Prism projects, mechanical-testing workbooks, and raw data live outside Git at:
-
-`/home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis`
+Raw micro-CT stacks, generated networks, manuscript files and Prism projects are not in Git. Set `GTA_MATERIAL` to the folder that holds them; small example outputs (`pore_data_example.csv`, `throat_data_example.csv`) show the expected formats.
 
 ---
 
@@ -141,7 +132,7 @@ The only requirement is that the µCT image can be binarised into **pore space (
 ### 3.1 Clone and Install
 
 ```bash
-git clone https://git.stilltarn.com/admin1/growth-tunnel-analysis.git
+git clone https://github.com/andtoni/growth-tunnel-analysis.git
 cd growth-tunnel-analysis
 uv sync --extra pipeline
 ```
@@ -359,9 +350,9 @@ Released under the **MIT Licence** (see [LICENSE](LICENSE)).
 ## 13. Contact
 
 **Andrea Tonelli** · University of Cape Town
-tnland001@myuct.ac.za · ORCID: [0000-0002-1601-4103](https://orcid.org/0000-0002-1601-4103)
+ORCID: [0000-0002-1601-4103](https://orcid.org/0000-0002-1601-4103)
 
-For questions about adapting this pipeline to other porous materials, use the canonical Forgejo repository or contact the author.
+For questions about adapting this pipeline to other porous materials, open an issue in this repository.
 
 ---
 

@@ -1,7 +1,7 @@
 # =============================================================================
 # PNM Pore & Throat Data Organiser for GraphPad Prism
 # =============================================================================
-# Author:      Andrea Tonelli (tnland001@myuct.ac.za)
+# Author:      Andrea Tonelli (ORCID 0000-0002-1601-4103)
 # ORCID:       https://orcid.org/0000-0002-1601-4103
 # Institution: University of Cape Town
 # Repository:  https://github.com/andtoni/growth-tunnel-analysis
@@ -40,7 +40,7 @@ from datetime import datetime
 # =============================================================================
 
 # Directory containing all pore*.xlsx and throat*.xlsx files
-INPUT_DIR = r"C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\PNM\Pore_Throats_Summary"
+INPUT_DIR = r"C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\PNM\Pore_Throats_Summary"
 
 # Number of measurements to take from the top of each file
 N_ROWS = 512

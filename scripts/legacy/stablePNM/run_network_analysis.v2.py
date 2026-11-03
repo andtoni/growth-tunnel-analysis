@@ -20,7 +20,7 @@ from datetime import datetime
 sample_name      = "SR-Pel20"
 pore_threshold   = 5        # um
 throat_threshold = 5      # um
-base_data_dir    = r"C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\codeoutput"
+base_data_dir    = r"C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\codeoutput"
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # ── Paths ─────────────────────────────────────────────────────────────────────

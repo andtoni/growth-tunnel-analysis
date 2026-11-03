@@ -82,7 +82,7 @@ SetActiveView(renderView1)
 # ----------------------------------------------------------------
 
 # create a new 'XML PolyData Reader'
-proj_02vtp = XMLPolyDataReader(registrationName='proj_02.vtp', FileName=['C:\\Users\\andto\\OneDrive\\Desktop\\University\\PhD\\DATA\\Transmural Space Characterisation\\3D Analysis Paper\\SR-Pel16\\proj_02.vtp'])
+proj_02vtp = XMLPolyDataReader(registrationName='proj_02.vtp', FileName=['C:\\Users\\<user>\\OneDrive\\Desktop\\University\\PhD\\DATA\\Transmural Space Characterisation\\3D Analysis Paper\\SR-Pel16\\proj_02.vtp'])
 proj_02vtp.CellArrayStatus = ['network | labels | throat | all', 'network | properties | throat | cross_sectional_area', 'network | properties | throat | direct_length', 'network | properties | throat | equivalent_diameter', 'network | properties | throat | inscribed_diameter', 'network | properties | throat | perimeter', 'network | properties | throat | total_length']
 proj_02vtp.PointArrayStatus = ['network | labels | pore | all', 'network | labels | pore | boundary', 'network | labels | pore | xmax', 'network | labels | pore | xmin', 'network | labels | pore | ymax', 'network | labels | pore | ymin', 'network | labels | pore | zmax', 'network | labels | pore | zmin', 'network | properties | pore | equivalent_diameter', 'network | properties | pore | extended_diameter', 'network | properties | pore | inscribed_diameter', 'network | properties | pore | phase', 'network | properties | pore | region_label', 'network | properties | pore | region_volume', 'network | properties | pore | surface_area', 'network | properties | pore | volume']
 proj_02vtp.TimeArray = 'None'
@@ -92,12 +92,12 @@ cellDatatoPointData1 = CellDatatoPointData(registrationName='CellDatatoPointData
 cellDatatoPointData1.CellDataArraytoprocess = ['network | labels | throat | all', 'network | properties | throat | cross_sectional_area', 'network | properties | throat | direct_length', 'network | properties | throat | equivalent_diameter', 'network | properties | throat | inscribed_diameter', 'network | properties | throat | perimeter', 'network | properties | throat | total_length']
 
 # create a new 'TIFF Series Reader'
-image2tif = TIFFSeriesReader(registrationName='image2.tif', FileNames=['C:\\Users\\andto\\OneDrive\\Desktop\\University\\PhD\\DATA\\Transmural Space Characterisation\\3D Analysis Paper\\SR-Pel16\\image2.tif'])
+image2tif = TIFFSeriesReader(registrationName='image2.tif', FileNames=['C:\\Users\\<user>\\OneDrive\\Desktop\\University\\PhD\\DATA\\Transmural Space Characterisation\\3D Analysis Paper\\SR-Pel16\\image2.tif'])
 image2tif.UseCustomDataSpacing = 1
 image2tif.CustomDataSpacing = [0.54, 0.54, 0.54]
 
 # create a new 'TIFF Series Reader'
-imagetif = TIFFSeriesReader(registrationName='image.tif', FileNames=['C:\\Users\\andto\\OneDrive\\Desktop\\University\\PhD\\DATA\\Transmural Space Characterisation\\3D Analysis Paper\\SR-Pel16\\image.tif'])
+imagetif = TIFFSeriesReader(registrationName='image.tif', FileNames=['C:\\Users\\<user>\\OneDrive\\Desktop\\University\\PhD\\DATA\\Transmural Space Characterisation\\3D Analysis Paper\\SR-Pel16\\image.tif'])
 imagetif.UseCustomDataSpacing = 1
 imagetif.CustomDataSpacing = [0.54, 0.54, 0.54]
 
@@ -134,7 +134,7 @@ glyph1.ScaleFactor = 0.75
 glyph1.GlyphTransform = 'Transform2'
 
 # create a new 'XML PolyData Reader'
-growthtunnelvtp = XMLPolyDataReader(registrationName='growthtunnel.vtp', FileName=['C:\\Users\\andto\\OneDrive\\Desktop\\University\\PhD\\DATA\\Transmural Space Characterisation\\3D Analysis Paper\\SR-Pel16\\growthtunnel.vtp'])
+growthtunnelvtp = XMLPolyDataReader(registrationName='growthtunnel.vtp', FileName=['C:\\Users\\<user>\\OneDrive\\Desktop\\University\\PhD\\DATA\\Transmural Space Characterisation\\3D Analysis Paper\\SR-Pel16\\growthtunnel.vtp'])
 growthtunnelvtp.CellArrayStatus = ['network | labels | throat | all', 'network | properties | throat | cross_sectional_area', 'network | properties | throat | diameter', 'network | properties | throat | direct_length', 'network | properties | throat | equivalent_diameter', 'network | properties | throat | inscribed_diameter', 'network | properties | throat | length', 'network | properties | throat | lens_volume', 'network | properties | throat | max_size', 'network | properties | throat | perimeter', 'network | properties | throat | spacing', 'network | properties | throat | total_length', 'network | properties | throat | total_volume', 'network | properties | throat | volume']
 growthtunnelvtp.PointArrayStatus = ['network | labels | pore | all', 'network | labels | pore | back', 'network | labels | pore | bottom', 'network | labels | pore | boundary', 'network | labels | pore | front', 'network | labels | pore | left', 'network | labels | pore | right', 'network | labels | pore | top', 'network | labels | pore | xmax', 'network | labels | pore | xmin', 'network | labels | pore | ymax', 'network | labels | pore | ymin', 'network | labels | pore | zmax', 'network | labels | pore | zmin', 'network | properties | pore | coordination_number', 'network | properties | pore | diameter', 'network | properties | pore | equivalent_diameter', 'network | properties | pore | extended_diameter', 'network | properties | pore | inscribed_diameter', 'network | properties | pore | max_size', 'network | properties | pore | phase', 'network | properties | pore | region_label', 'network | properties | pore | region_volume', 'network | properties | pore | seed', 'network | properties | pore | surface_area', 'network | properties | pore | volume']
 growthtunnelvtp.TimeArray = 'None'

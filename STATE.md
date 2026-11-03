@@ -4,9 +4,9 @@ Last updated: 2026-07-06
 
 ## Current State
 
-The Forgejo repository has been restored locally at `/home/andto/coding/papers/growth-tunnel-analysis`.
+The repository has been restored locally at `growth-tunnel-analysis`.
 
-The complete associated material has been moved into `/home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis`:
+The complete associated material has been moved into `$GTA_MATERIAL`:
 
 - `Original/transmural-space-characterisation-3d-analysis-paper`
 - `Original/paper-2-manuscript-and-extra-analysis`
@@ -43,7 +43,7 @@ Legacy paper-specific code has been filed into Git under `scripts/legacy/`, incl
 ## Resume Procedure
 
 ```bash
-cd /home/andto/coding/papers/growth-tunnel-analysis
+cd growth-tunnel-analysis
 make status
 make check
 sed -n '1,260p' docs/SCRIPT_INVENTORY.md

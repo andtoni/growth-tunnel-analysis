@@ -14,7 +14,7 @@
 Option Explicit
 
 ' --- CONFIG ---
-Const DATA_FOLDER       As String  = "C:\Users\andto\OneDrive\Desktop\University\Papers\PhD\Paper 2\Extra Analysis\Mechanical\"
+Const DATA_FOLDER       As String  = "C:\Users\<user>\OneDrive\Desktop\University\Papers\PhD\Paper 2\Extra Analysis\Mechanical\"
 Const DOGBONE_WIDTH_MM  As Double  = 4.01
 Const GAUGE_LENGTH_MM   As Double  = 21.82
 Const THICKNESS_P16     As Double  = 0.3575

@@ -2,7 +2,7 @@
 
 ## Active Pipeline
 
-These are the canonical pipeline scripts already present in the Forgejo repository. The archived `Paper 2/Git` copies were byte-identical during the 2026-07-06 migration.
+These are the canonical pipeline scripts already present in the repository. The archived `Paper 2/Git` copies were byte-identical during the 2026-07-06 migration.
 
 | Script | Role |
 |---|---|
@@ -30,14 +30,14 @@ These are intentionally external to Git:
 
 | Artefact | Location |
 |---|---|
-| Mechanical Data Summary workbook | `/home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Mechanical Data Summary.xlsx` |
-| Mechanical raw exports | `/home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Mechanical` |
-| Mechanical table DOCX | `/home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Table for Mechanical Properties.docx` |
-| Mechanical anisotropy SVG table | `/home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/mechanical_anisotropy_svg_table.svg` |
-| Prism project | `/home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Project2.prism` |
-| PNM quantification workbook | `/home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/transmural-space-characterisation-3d-analysis-paper/codeoutput/Pore_Network_Quantification.xlsx` |
-| PNM Prism grouped workbook | `/home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/transmural-space-characterisation-3d-analysis-paper/codeoutput/PNM_Prism_Grouped.xlsx` |
-| Confocal porosity output workbook | `/home/andto/Nextcloud/Work/PhD/Projects/growth-tunnel-analysis/Original/transmural-space-characterisation-3d-analysis-paper/Porosity/Confocal/porosity_output/porosity_results.xlsx` |
+| Mechanical Data Summary workbook | `$GTA_MATERIAL/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Mechanical Data Summary.xlsx` |
+| Mechanical raw exports | `$GTA_MATERIAL/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Mechanical` |
+| Mechanical table DOCX | `$GTA_MATERIAL/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Table for Mechanical Properties.docx` |
+| Mechanical anisotropy SVG table | `$GTA_MATERIAL/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/mechanical_anisotropy_svg_table.svg` |
+| Prism project | `$GTA_MATERIAL/Original/paper-2-manuscript-and-extra-analysis/Extra Analysis/Project2.prism` |
+| PNM quantification workbook | `$GTA_MATERIAL/Original/transmural-space-characterisation-3d-analysis-paper/codeoutput/Pore_Network_Quantification.xlsx` |
+| PNM Prism grouped workbook | `$GTA_MATERIAL/Original/transmural-space-characterisation-3d-analysis-paper/codeoutput/PNM_Prism_Grouped.xlsx` |
+| Confocal porosity output workbook | `$GTA_MATERIAL/Original/transmural-space-characterisation-3d-analysis-paper/Porosity/Confocal/porosity_output/porosity_results.xlsx` |
 
 ## Remaining Porting Work
 

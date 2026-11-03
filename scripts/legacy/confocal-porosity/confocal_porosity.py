@@ -1,7 +1,7 @@
 # =============================================================================
 # Confocal Porosity — CZI Z-Stack Batch Analysis
 # =============================================================================
-# Author:      Andrea Tonelli (tnland001@myuct.ac.za)
+# Author:      Andrea Tonelli (ORCID 0000-0002-1601-4103)
 # Institution: University of Cape Town
 #
 # Description:
@@ -48,7 +48,7 @@ from openpyxl.utils import get_column_letter
 # =============================================================================
 
 # Base folder containing one subfolder per sample
-base_folder = r"C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\Porosity\Confocal"
+base_folder = r"C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\Porosity\Confocal"
 
 # Sample names — must match subfolder names exactly
 samples = [
@@ -58,7 +58,7 @@ samples = [
 ]
 
 # Output folder (created automatically)
-output_dir = r"C:\Users\andto\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\Porosity\Confocal\porosity_output"
+output_dir = r"C:\Users\<user>\OneDrive\Desktop\University\PhD\DATA\Transmural Space Characterisation\3D Analysis Paper\Porosity\Confocal\porosity_output"
 
 # Channel index to analyse (0-based). For single-channel stacks use 0.
 # Check your Zeiss acquisition settings if unsure.
