@@ -8,7 +8,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MATERIAL = Path(os.environ.get("GTA_MATERIAL", "material-not-set"))
+MATERIAL_ENV = os.environ.get("GTA_MATERIAL")
+MATERIAL = Path(MATERIAL_ENV) if MATERIAL_ENV else None
 
 REQUIRED_REPO_PATHS = [
     "AGENTS.md",
@@ -147,7 +148,11 @@ def check_tracked_data() -> bool:
 def main() -> int:
     checks: list[bool] = []
     checks.extend(ok_path(ROOT / path, "repo") for path in REQUIRED_REPO_PATHS)
-    checks.extend(ok_path(MATERIAL / path, "material") for path in REQUIRED_MATERIAL_PATHS)
+    if MATERIAL is None:
+        print("missing material: set GTA_MATERIAL to the project material folder (research.rawData in project.yaml)")
+        checks.append(False)
+    else:
+        checks.extend(ok_path(MATERIAL / path, "material") for path in REQUIRED_MATERIAL_PATHS)
     checks.append(check_runs())
     checks.append(check_remote())
     checks.append(check_tracked_data())

@@ -4,9 +4,9 @@ Purpose: reproducible paper/code project for the pore-network, confocal porosity
 
 Hard rules:
 - Use `uv` for Python. Never use pip, conda, poetry, pipenv, virtualenv, or `python -m venv`.
-- GitHub is canonical: `https://github.com/andtoni/growth-tunnel-analysis.git`. This repository is public: never commit absolute local paths, hostnames, email addresses or other private details.
+- GitHub is canonical: `https://github.com/andtoni/growth-tunnel-analysis.git`. This repository is public: never commit hostnames, email addresses or other private details, and no absolute local paths except `research.rawData` in `project.yaml`, which the workstream standard requires.
 - Do not commit raw micro-CT stacks, CZI files, `.raw` Instron exports, generated SNOW2 `.pkl`, VTK/VTP/VTI volumes, Prism files, DOCX/PDF exports, or secrets.
-- Project material lives outside Git in the folder named by `GTA_MATERIAL` (declared as `research.rawData` in `project.yaml`).
+- Project material lives outside Git in the folder declared as `research.rawData` in `project.yaml`; scripts read it from the `GTA_MATERIAL` environment variable.
 - Treat root scripts `01_*` to `05_*`, legacy scripts under `scripts/legacy/`, editable SVG/PVSM sources, and documentation as source.
 - Treat Excel/DOCX/Prism/EMF/PNG/TIFF outputs in the material folder as artefacts unless explicitly promoted to source.
 - Record material changes in `RUNS.jsonl`.
