@@ -1,9 +1,14 @@
 name: Canonical workstream validation
-description: Run the estate-standard staged Dagger and Trivy pipeline
+description: Sort a change into its lane, or run the estate-standard staged Dagger and Trivy pipeline
 inputs:
+  step:
+    description: classify, validate, or account
+    required: false
+    default: validate
   category:
     description: infrastructure, software, or research
-    required: true
+    required: false
+    default: ""
   source-directory:
     description: Checked-out untrusted source directory
     required: false
@@ -14,18 +19,53 @@ inputs:
     default: .
   stage:
     description: pull-request or full
-    required: true
+    required: false
+    default: ""
   commit-sha:
     description: Exact checked-out source revision
-    required: true
+    required: false
+    default: ""
   changed-files-b64:
     description: Base64 NUL-delimited changed paths for pull-request validation
     required: false
     default: ""
+  lane:
+    description: Lane from the classify step; empty keeps the plain staged behaviour
+    required: false
+    default: ""
+  lane-config:
+    description: Repository-specific lane inputs as JSON, for the classify step
+    required: false
+    default: ""
+  github-token:
+    description: Token that reads the pull request and writes its lane label, for the classify step
+    required: false
+    default: ""
+outputs:
+  lane:
+    description: 0, 1, 2, 3, 4, E, or full
+    value: ${{ steps.classify.outputs.lane }}
+  underlying:
+    description: The lane an emergency change would otherwise have
+    value: ${{ steps.classify.outputs.underlying }}
+  review:
+    description: none, standard, or deep
+    value: ${{ steps.classify.outputs.review }}
 runs:
   using: composite
   steps:
+    - name: Sort the change into its lane
+      id: classify
+      if: inputs.step == 'classify'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        LANE_CONFIG: ${{ inputs.lane-config }}
+        ACTION_PATH: ${{ github.action_path }}
+      run: python3 "$ACTION_PATH/lanes/classify.py"
+
     - name: Bind the checked-out source identity
+      if: inputs.step == 'validate' || inputs.step == 'account'
       shell: bash
       env:
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
@@ -36,6 +76,7 @@ runs:
         test "$(git -C "$SOURCE_DIRECTORY" rev-parse HEAD)" = "$COMMIT_SHA"
 
     - name: Run canonical Dagger pipeline
+      if: inputs.step == 'validate'
       uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77
       with:
         version: v0.21.7
@@ -48,5 +89,18 @@ runs:
           --stage=${{ inputs.stage }}
           --commit-sha=${{ inputs.commit-sha }}
           --changed-files-b64=${{ inputs.changed-files-b64 }}
+          --lane=${{ inputs.lane }}
+        dagger-flags: --progress plain
+        enable-github-summary: true
+
+    - name: Run account-level Dagger pipeline
+      if: inputs.step == 'account'
+      uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77
+      with:
+        version: v0.21.7
+        verb: call
+        args: >-
+          --mod=${{ github.action_path }}/dagger platform
+          --source=${{ inputs.source-directory }}
         dagger-flags: --progress plain
         enable-github-summary: true

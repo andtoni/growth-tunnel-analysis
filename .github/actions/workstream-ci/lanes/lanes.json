@@ -1,0 +1,168 @@
+{
+  "bots": [
+    "renovate[bot]"
+  ],
+  "classes": {
+    "code": [
+      "src/**",
+      "lib/**",
+      "apps/**",
+      "crates/**",
+      "packages/**",
+      "scripts/**",
+      "tests/**",
+      "test/**",
+      "analysis/**",
+      "notebooks/**",
+      "jobs/**",
+      "environments/**",
+      "config/**",
+      "schemas/**",
+      "dev/**",
+      "Makefile",
+      "Dockerfile",
+      "**/Dockerfile",
+      ".dockerignore",
+      ".gitignore",
+      ".gitattributes",
+      "compose*.yml",
+      "pyproject.toml",
+      "uv.lock",
+      "requirements*.txt",
+      "**/requirements*.txt",
+      "package.json",
+      "**/package.json",
+      "pnpm-lock.yaml",
+      "pnpm-workspace.yaml",
+      "package-lock.json",
+      "**/package-lock.json",
+      "yarn.lock",
+      "**/yarn.lock",
+      "Cargo.toml",
+      "**/Cargo.toml",
+      "Cargo.lock",
+      "rust-toolchain.toml",
+      "tsconfig*.json",
+      "**/tsconfig*.json",
+      ".python-version",
+      ".tool-versions",
+      "mise.toml",
+      "RUNS.jsonl"
+    ],
+    "dependency": [
+      "uv.lock",
+      "**/uv.lock",
+      "pyproject.toml",
+      "**/pyproject.toml",
+      "requirements*.txt",
+      "**/requirements*.txt",
+      "package.json",
+      "**/package.json",
+      "pnpm-lock.yaml",
+      "**/pnpm-lock.yaml",
+      "package-lock.json",
+      "**/package-lock.json",
+      "yarn.lock",
+      "**/yarn.lock",
+      "bun.lock",
+      "**/bun.lock",
+      "Cargo.toml",
+      "**/Cargo.toml",
+      "Cargo.lock",
+      "**/Cargo.lock",
+      "Dockerfile",
+      "**/Dockerfile",
+      "compose*.yml",
+      "**/compose*.yml",
+      ".tool-versions",
+      "mise.toml"
+    ],
+    "platform": [
+      ".github/**",
+      "ansible/**",
+      "opentofu/**",
+      "policy/**",
+      "renovate/**",
+      "renovate.json",
+      "project.yaml",
+      "AGENTS.md",
+      "**/AGENTS.md",
+      "CLAUDE.md",
+      "**/CLAUDE.md",
+      "**/CODEOWNERS",
+      "**/trivy-baseline.json",
+      "**/firewall/**",
+      "**/Caddyfile",
+      "**/*.tf",
+      "**/*.tfvars",
+      "**/*.hujson"
+    ],
+    "record": [
+      "*.md",
+      "**/*.md",
+      "docs/**",
+      "status/**",
+      "status.d/**",
+      "decisions/**",
+      "decisions.d/**",
+      "LICENSE"
+    ],
+    "stateful": [
+      "**/migrations/**",
+      "**/migration/**",
+      "**/*.sql",
+      "**/schema.prisma",
+      "**/diesel.toml"
+    ]
+  },
+  "dataLinesLimit": 200,
+  "labels": {
+    "emergency": "emergency",
+    "raise": {
+      "controlled": 3,
+      "raise-lane-3": 3,
+      "raise-lane-4": 4,
+      "stateful-image": 3,
+      "update-major": 3
+    }
+  },
+  "lanes": {
+    "0": {
+      "checks": "secret scan",
+      "merge": "automatic on green",
+      "name": "Record",
+      "review": "none"
+    },
+    "1": {
+      "checks": "affected lanes, new-finding scan",
+      "merge": "automatic on green",
+      "name": "Standard",
+      "review": "none"
+    },
+    "2": {
+      "checks": "affected lanes, new-finding scan",
+      "merge": "automatic on green and a clear review",
+      "name": "Code",
+      "review": "standard, blocking"
+    },
+    "3": {
+      "checks": "every lane at full stage",
+      "merge": "owner",
+      "name": "Stateful",
+      "review": "deep, blocking"
+    },
+    "4": {
+      "checks": "every lane at full stage",
+      "merge": "owner",
+      "name": "Platform",
+      "review": "deep, blocking"
+    },
+    "E": {
+      "checks": "secret scan now; the underlying lane's checks after merge",
+      "merge": "owner",
+      "name": "Emergency",
+      "review": "none before merge"
+    }
+  },
+  "version": 1
+}
