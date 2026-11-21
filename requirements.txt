@@ -23,7 +23,7 @@
 
 # Core pipeline (Scripts 01–03)
 porespy==2.2.0
-openpnm==3.3.0
+openpnm==3.6.4
 numpy==1.26.4
 scipy==1.13.1
 scikit-image==0.22.0
