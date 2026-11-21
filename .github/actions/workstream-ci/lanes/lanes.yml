@@ -2,10 +2,11 @@
 # every repository (owner decision, 2026-11-20). `classify.py` reads the
 # generated `lanes.json`; run `scripts/render-lanes.py` after editing this file.
 #
-# Each changed file takes the first class it matches, in this order: platform,
-# stateful, record, code. A file that matches none is unrecognised and counts
-# as platform. The change takes the highest lane any file reaches. Labels can
-# raise a lane and never lower it.
+# Each changed file takes the first class it matches, in this order: protected,
+# the repository's platform and stateful paths, stateful, the repository's
+# standard (bot only), record and code paths, platform, record, code. A file
+# that matches none is unrecognised and counts as platform. The change takes the
+# highest lane any file reaches. Labels can raise a lane and never lower it.
 version: 1
 
 lanes:
@@ -60,11 +61,10 @@ labels:
 dataLinesLimit: 200
 
 classes:
-  platform:
+  # The files that define CI, review and policy themselves. No repository input
+  # can lower them.
+  protected:
     - .github/**
-    - ansible/**
-    - opentofu/**
-    - policy/**
     - renovate/**
     - renovate.json
     - project.yaml
@@ -74,6 +74,10 @@ classes:
     - "**/CLAUDE.md"
     - "**/CODEOWNERS"
     - "**/trivy-baseline.json"
+  platform:
+    - ansible/**
+    - opentofu/**
+    - policy/**
     - "**/firewall/**"
     - "**/Caddyfile"
     - "**/*.tf"

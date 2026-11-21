@@ -90,27 +90,37 @@ def file_lane(path: str, table: dict[str, Any], config: dict[str, Any], bot: boo
 
     A repository's own classes are consulted before the shared table, so a
     repository can say that one of its paths is, say, code although the shared
-    table would call it platform. Those inputs live in the caller workflow,
-    which is itself a platform file.
+    table would call it platform. Two things no repository input can lower:
+    the protected files that define CI and policy themselves, and the shared
+    stateful patterns (migrations and schema are stateful in every repository).
     """
     classes = table["classes"]
-    for own, shared in ((True, False), (False, True)):
-        def listed(key: str, name: str) -> list[str]:
-            return (config.get(key, []) if own else []) + (classes[name] if shared else [])
-
-        where = "repository " if own else ""
-        if bot and own and matches(path, config.get("standardPaths", [])):
-            return "1", "repository standard path"
-        if matches(path, listed("platformPaths", "platform")):
-            return "4", f"{where}platform"
-        if matches(path, listed("statefulPaths", "stateful")):
-            return "3", f"{where}stateful"
-        if bot and shared and matches(path, classes["dependency"]):
-            return "1", "dependency file"
-        if matches(path, listed("recordPaths", "record")):
-            return "0", f"{where}record"
-        if matches(path, listed("codePaths", "code")):
-            return "2", f"{where}code"
+    if matches(path, classes["protected"]):
+        return "4", "protected platform"
+    if matches(path, config.get("platformPaths", [])):
+        return "4", "repository platform"
+    if matches(path, config.get("statefulPaths", [])):
+        return "3", "repository stateful"
+    if matches(path, classes["stateful"]):
+        return "3", "stateful"
+    if bot and matches(path, config.get("standardPaths", [])):
+        return "1", "repository standard path"
+    # A bot's dependency file is Standard wherever the repository keeps its code,
+    # but not where the shared table says platform (an Ansible compose file).
+    dependency = matches(path, classes["dependency"])
+    if bot and dependency and not matches(path, classes["platform"]):
+        return "1", "dependency file"
+    if matches(path, config.get("recordPaths", [])):
+        return "0", "repository record"
+    if matches(path, config.get("codePaths", [])):
+        return "2", "repository code"
+    if matches(path, classes["platform"]):
+        return "4", "platform"
+    # A manifest, lockfile or Dockerfile is never a record, wherever it lives.
+    if not dependency and matches(path, classes["record"]):
+        return "0", "record"
+    if matches(path, classes["code"]):
+        return "2", "code"
     return "4", "unrecognised"
 
 

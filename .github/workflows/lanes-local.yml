@@ -206,6 +206,10 @@ jobs:
         uses: anthropics/claude-code-action@f27be6b65a4652f08a2ba3cff79114829b588967 # v1.0.252
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # A reusable workflow's OIDC token names this repository's workflow, and the action's
+          # app-token exchange refuses it (401 Invalid OIDC token, homelab#808). The job token
+          # carries the pull-requests: write this job declares.
+          github_token: ${{ github.token }}
           use_sticky_comment: true
           prompt: |
             REPO: ${{ github.repository }}
@@ -262,7 +266,7 @@ jobs:
         run: |
           set -euo pipefail
           body=$(gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/issues/$PULL_REQUEST/comments?per_page=100" |
-            jq -r --arg started "$STARTED" '[.[][] | select(.user.login == "claude[bot]" and .updated_at >= $started)] | last | .body // ""')
+            jq -r --arg started "$STARTED" '[.[][] | select(.user.login == "github-actions[bot]" and .updated_at >= $started)] | last | .body // ""')
           verdict=$(printf '%s\n' "$body" | tr -d '*`_' | sed -e 's/[[:space:]]*$//' | awk 'NF { line = $0 } END { print line }')
           if [[ ! "$verdict" =~ ^Findings:\ ([0-9]+)$ ]]; then
             echo "::error::The review did not post a comment ending in 'Findings: <n>' during this run."
