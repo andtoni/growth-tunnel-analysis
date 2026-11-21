@@ -19,4 +19,4 @@ make status
 make check
 sed -n '1,220p' docs/START_HERE.md
 ```
-- Merge a pull request only after the Claude review has posted its comment; fix or answer every finding first.
+- Every pull request is sorted into a lane and labelled `lane-0` to `lane-4` or `lane-E`. Arm auto-merge only on lanes 0 to 2; the `required` check waits for the Claude review where the lane needs one, so fix or answer every finding. Lanes 3, 4 and E are merged by the owner, and only the owner sets the `emergency` label.

@@ -1,0 +1,169 @@
+# The lane table: the one definition of how a change is sorted and gated in
+# every repository (owner decision, 2026-11-20). `classify.py` reads the
+# generated `lanes.json`; run `scripts/render-lanes.py` after editing this file.
+#
+# Each changed file takes the first class it matches, in this order: platform,
+# stateful, record, code. A file that matches none is unrecognised and counts
+# as platform. The change takes the highest lane any file reaches. Labels can
+# raise a lane and never lower it.
+version: 1
+
+lanes:
+  "0":
+    name: Record
+    checks: secret scan
+    review: none
+    merge: automatic on green
+  "1":
+    name: Standard
+    checks: affected lanes, new-finding scan
+    review: none
+    merge: automatic on green
+  "2":
+    name: Code
+    checks: affected lanes, new-finding scan
+    review: standard, blocking
+    merge: automatic on green and a clear review
+  "3":
+    name: Stateful
+    checks: every lane at full stage
+    review: deep, blocking
+    merge: owner
+  "4":
+    name: Platform
+    checks: every lane at full stage
+    review: deep, blocking
+    merge: owner
+  E:
+    name: Emergency
+    checks: secret scan now; the underlying lane's checks after merge
+    review: none before merge
+    merge: owner
+
+# Authors whose changes may be Standard. A bot change is Standard only when
+# every commit is the bot's, every file is a dependency file, nothing in it is
+# platform or stateful, and it is not a major update.
+bots:
+  - renovate[bot]
+
+labels:
+  emergency: emergency
+  raise:
+    raise-lane-3: 3
+    raise-lane-4: 4
+    # Renovate presets mark what must not be routine.
+    update-major: 3
+    stateful-image: 3
+    controlled: 3
+
+# More than this many changed lines under a repository's `dataPaths` is Stateful.
+dataLinesLimit: 200
+
+classes:
+  platform:
+    - .github/**
+    - ansible/**
+    - opentofu/**
+    - policy/**
+    - renovate/**
+    - renovate.json
+    - project.yaml
+    - AGENTS.md
+    - "**/AGENTS.md"
+    - CLAUDE.md
+    - "**/CLAUDE.md"
+    - "**/CODEOWNERS"
+    - "**/trivy-baseline.json"
+    - "**/firewall/**"
+    - "**/Caddyfile"
+    - "**/*.tf"
+    - "**/*.tfvars"
+    - "**/*.hujson"
+  stateful:
+    - "**/migrations/**"
+    - "**/migration/**"
+    - "**/*.sql"
+    - "**/schema.prisma"
+    - "**/diesel.toml"
+  record:
+    - "*.md"
+    - "**/*.md"
+    - docs/**
+    - status/**
+    - status.d/**
+    - decisions/**
+    - decisions.d/**
+    - LICENSE
+  code:
+    - src/**
+    - lib/**
+    - apps/**
+    - crates/**
+    - packages/**
+    - scripts/**
+    - tests/**
+    - test/**
+    - analysis/**
+    - notebooks/**
+    - jobs/**
+    - environments/**
+    - config/**
+    - schemas/**
+    - dev/**
+    - Makefile
+    - Dockerfile
+    - "**/Dockerfile"
+    - .dockerignore
+    - .gitignore
+    - .gitattributes
+    - compose*.yml
+    - pyproject.toml
+    - uv.lock
+    - requirements*.txt
+    - "**/requirements*.txt"
+    - package.json
+    - "**/package.json"
+    - pnpm-lock.yaml
+    - pnpm-workspace.yaml
+    - package-lock.json
+    - "**/package-lock.json"
+    - yarn.lock
+    - "**/yarn.lock"
+    - Cargo.toml
+    - "**/Cargo.toml"
+    - Cargo.lock
+    - rust-toolchain.toml
+    - tsconfig*.json
+    - "**/tsconfig*.json"
+    - .python-version
+    - .tool-versions
+    - mise.toml
+    - RUNS.jsonl
+  # What a bot dependency update may touch and stay Standard.
+  dependency:
+    - uv.lock
+    - "**/uv.lock"
+    - pyproject.toml
+    - "**/pyproject.toml"
+    - requirements*.txt
+    - "**/requirements*.txt"
+    - package.json
+    - "**/package.json"
+    - pnpm-lock.yaml
+    - "**/pnpm-lock.yaml"
+    - package-lock.json
+    - "**/package-lock.json"
+    - yarn.lock
+    - "**/yarn.lock"
+    - bun.lock
+    - "**/bun.lock"
+    - Cargo.toml
+    - "**/Cargo.toml"
+    - Cargo.lock
+    - "**/Cargo.lock"
+    - Dockerfile
+    - "**/Dockerfile"
+    - compose*.yml
+    - "**/compose*.yml"
+    - .tool-versions
+    - mise.toml

@@ -1,5 +1,12 @@
-import { dag, Directory, func, object } from "@dagger.io/dagger";
+import {
+  CacheSharingMode,
+  dag,
+  Directory,
+  func,
+  object,
+} from "@dagger.io/dagger";
 import YAML from "yaml";
+import { Finding, findingKey, unacceptedFindings } from "./findings";
 
 const TRIVY =
   "aquasec/trivy@sha256:cffe3f5161a47a6823fbd23d985795b3ed72a4c806da4c4df16266c02accdd6f";
@@ -13,6 +20,9 @@ const DIGEST = /^[a-z0-9][a-z0-9./:_-]*@sha256:[0-9a-f]{64}$/;
 const SHA = /^[0-9a-f]{40}$/;
 const CATEGORIES = new Set(["infrastructure", "software", "research"]);
 const STAGES = new Set(["pull-request", "full"]);
+// The lane a change was sorted into (lanes/lanes.yml). Empty keeps the plain
+// staged behaviour, which the weekly full run and manual dispatch use.
+const LANES = new Set(["", "0", "1", "2", "3", "4", "E", "full"]);
 
 type Lane = {
   name: string;
@@ -35,14 +45,6 @@ type Project = {
     trivySkipDirs?: string[];
     trivyBaseline?: string;
   };
-};
-
-type Finding = {
-  kind: "vulnerability" | "misconfiguration";
-  target: string;
-  id: string;
-  package: string;
-  installedVersion: string;
 };
 
 function strings(value: unknown): value is string[] {
@@ -171,21 +173,30 @@ export class WorkstreamCi {
     return project;
   }
 
-  private async trivy(source: Directory, project: Project): Promise<void> {
-    const skipArgs = [
-      ".git",
-      ".terraform",
-      ...(project.ci.trivySkipDirs ?? []),
-    ].flatMap((path) => ["--skip-dirs", path]);
-    const cache = dag.cacheVolume(`workstream-${project.name}-trivy`);
-    const base = dag
+  private trivyBase(directory: Directory, project: Project) {
+    return dag
       .container()
       .from(TRIVY)
       .withEntrypoint([])
-      .withDirectory("/src", source)
+      .withDirectory("/src", directory)
       .withWorkdir("/src")
-      .withMountedCache("/root/.cache/trivy", cache);
-    const assessed = base.withExec([
+      .withMountedCache(
+        "/root/.cache/trivy",
+        dag.cacheVolume(`workstream-${project.name}-trivy`),
+      );
+  }
+
+  private skipArgs(project: Project): string[] {
+    return [".git", ".terraform", ...(project.ci.trivySkipDirs ?? [])].flatMap(
+      (path) => ["--skip-dirs", path],
+    );
+  }
+
+  private async findings(
+    directory: Directory,
+    project: Project,
+  ): Promise<Finding[]> {
+    const assessed = this.trivyBase(directory, project).withExec([
       "trivy",
       "fs",
       "--scanners",
@@ -199,7 +210,7 @@ export class WorkstreamCi {
       "json",
       "--output",
       "/tmp/trivy-assessment.json",
-      ...skipArgs,
+      ...this.skipArgs(project),
       "/src",
     ]);
     const report = JSON.parse(
@@ -215,64 +226,65 @@ export class WorkstreamCi {
         Misconfigurations?: Array<{ ID?: string; AVDID?: string }>;
       }>;
     };
-    const findings: Finding[] = (report.Results ?? [])
-      .flatMap((result) => [
-        ...(result.Vulnerabilities ?? []).map((finding) => ({
-          kind: "vulnerability" as const,
-          target: result.Target ?? "",
-          id: finding.VulnerabilityID ?? "",
-          package: finding.PkgName ?? "",
-          installedVersion: finding.InstalledVersion ?? "",
-        })),
-        ...(result.Misconfigurations ?? []).map((finding) => ({
-          kind: "misconfiguration" as const,
-          target: result.Target ?? "",
-          id: finding.AVDID ?? finding.ID ?? "",
-          package: "",
-          installedVersion: "",
-        })),
-      ])
-      .sort((left, right) =>
-        JSON.stringify(left).localeCompare(JSON.stringify(right)),
-      );
-    let accepted: Finding[] = [];
-    if (project.ci.trivyBaseline) {
-      const baseline = JSON.parse(
-        await source.file(project.ci.trivyBaseline).contents(),
-      ) as { version?: number; findings?: Finding[] };
-      if (
-        baseline.version !== 1 ||
-        !Array.isArray(baseline.findings) ||
-        baseline.findings.some(
-          (finding) =>
-            !finding ||
-            !["vulnerability", "misconfiguration"].includes(finding.kind) ||
-            typeof finding.target !== "string" ||
-            typeof finding.id !== "string" ||
-            typeof finding.package !== "string" ||
-            typeof finding.installedVersion !== "string",
-        )
-      ) {
-        throw new Error("invalid Trivy security baseline");
-      }
-      accepted = baseline.findings
-        .map((finding) => ({
-          kind: finding.kind,
-          target: finding.target,
-          id: finding.id,
-          package: finding.package,
-          installedVersion: finding.installedVersion,
-        }))
-        .sort((left, right) =>
-          JSON.stringify(left).localeCompare(JSON.stringify(right)),
-        );
+    return (report.Results ?? []).flatMap((result) => [
+      ...(result.Vulnerabilities ?? []).map((finding) => ({
+        kind: "vulnerability" as const,
+        target: result.Target ?? "",
+        id: finding.VulnerabilityID ?? "",
+        package: finding.PkgName ?? "",
+        installedVersion: finding.InstalledVersion ?? "",
+      })),
+      ...(result.Misconfigurations ?? []).map((finding) => ({
+        kind: "misconfiguration" as const,
+        target: result.Target ?? "",
+        id: finding.AVDID ?? finding.ID ?? "",
+        package: "",
+        installedVersion: "",
+      })),
+    ]);
+  }
+
+  private async baseline(
+    source: Directory,
+    project: Project,
+  ): Promise<Finding[]> {
+    if (!project.ci.trivyBaseline) return [];
+    const baseline = JSON.parse(
+      await source.file(project.ci.trivyBaseline).contents(),
+    ) as { version?: number; findings?: Finding[] };
+    if (
+      baseline.version !== 1 ||
+      !Array.isArray(baseline.findings) ||
+      baseline.findings.some(
+        (finding) =>
+          !finding ||
+          !["vulnerability", "misconfiguration"].includes(finding.kind) ||
+          typeof finding.target !== "string" ||
+          typeof finding.id !== "string" ||
+          typeof finding.package !== "string" ||
+          typeof finding.installedVersion !== "string",
+      )
+    ) {
+      throw new Error("invalid Trivy security baseline");
     }
-    if (JSON.stringify(findings) !== JSON.stringify(accepted)) {
-      throw new Error(
-        "HIGH/CRITICAL findings differ from the reviewed Trivy baseline",
-      );
-    }
-    await base
+    return baseline.findings;
+  }
+
+  // Pull request: the gate is "no new HIGH or CRITICAL finding compared with
+  // the base revision". Both trees are scanned in the same run with the same
+  // vulnerability database, so an advisory published against an unchanged
+  // dependency never fails an unrelated change. A finding the proposed
+  // baseline accepts is allowed, so a reviewed acceptance stays atomic.
+  // Full (weekly assurance, manual dispatch): the tree is compared with the
+  // reviewed baseline, which is where drift on main is reported.
+  private async trivy(
+    source: Directory,
+    project: Project,
+    base?: Directory,
+    secretsOnly = false,
+  ): Promise<void> {
+    if (!secretsOnly) await this.newFindings(source, project, base);
+    await this.trivyBase(source, project)
       .withExec([
         "trivy",
         "fs",
@@ -282,10 +294,36 @@ export class WorkstreamCi {
         "HIGH,CRITICAL",
         "--exit-code",
         "1",
-        ...skipArgs,
+        ...this.skipArgs(project),
         "/src",
       ])
       .sync();
+  }
+
+  private async newFindings(
+    source: Directory,
+    project: Project,
+    base?: Directory,
+  ): Promise<void> {
+    const found = await this.findings(source, project);
+    const allowed = new Set(
+      (await this.baseline(source, project)).map(findingKey),
+    );
+    if (base) {
+      for (const finding of await this.findings(base, project)) {
+        allowed.add(findingKey(finding));
+      }
+    }
+    const added = unacceptedFindings(found, allowed);
+    if (added.length) {
+      throw new Error(
+        `${
+          base
+            ? "new HIGH/CRITICAL findings compared with the base revision"
+            : "HIGH/CRITICAL findings on this revision are missing from the reviewed Trivy baseline"
+        }: ${added.join(", ")}`,
+      );
+    }
   }
 
   private async lane(
@@ -297,11 +335,10 @@ export class WorkstreamCi {
     files: string[],
   ): Promise<void> {
     const commands = [
-      ...lane.setupCommands,
       ...lane.pullRequestCommands,
       ...(stage === "full" ? lane.fullCommands : []),
     ];
-    if (!commands.length) return;
+    if (!lane.setupCommands.length && !commands.length) return;
     let container = dag
       .container()
       .from(lane.image)
@@ -320,6 +357,38 @@ export class WorkstreamCi {
         "/root/.cache",
         dag.cacheVolume(`workstream-${project.name}-${lane.name}`),
       );
+    // Setup runs after the source mount, so its layer never caches; keep apt's
+    // indexes and downloaded packages instead, mounted for setup only. Both
+    // file operations are no-ops on images without apt.
+    if (lane.setupCommands.length) {
+      const apt = `workstream-${project.name}-${lane.name}-apt`;
+      container = container
+        .withoutFile("/etc/apt/apt.conf.d/docker-clean")
+        .withNewFile(
+          "/etc/apt/apt.conf.d/keep-cache",
+          'Binary::apt::APT::Keep-Downloaded-Packages "true";\n',
+        )
+        .withMountedCache(
+          "/var/cache/apt",
+          dag.cacheVolume(`${apt}-archives`),
+          {
+            sharing: CacheSharingMode.Locked,
+          },
+        )
+        .withMountedCache(
+          "/var/lib/apt/lists",
+          dag.cacheVolume(`${apt}-lists`),
+          {
+            sharing: CacheSharingMode.Locked,
+          },
+        );
+      for (const command of lane.setupCommands) {
+        container = container.withExec(["sh", "-euc", command]);
+      }
+      container = container
+        .withoutMount("/var/cache/apt")
+        .withoutMount("/var/lib/apt/lists");
+    }
     for (const command of commands) {
       container = container.withExec(["sh", "-euc", command]);
     }
@@ -426,7 +495,7 @@ export class WorkstreamCi {
         .withExec([
           "sh",
           "-euc",
-          "apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*",
+          "apt-get update && apt-get install -y --no-install-recommends git jq && rm -rf /var/lib/apt/lists/*",
         ])
         .withExec(["python", "-m", "pip", "install", "PyYAML==6.0.2"])
         .withExec(["python", "-m", "unittest", "discover", "-s", "tests"])
@@ -452,10 +521,17 @@ export class WorkstreamCi {
           ".github/actions/workstream-ci/dagger/dagger.json",
           ".github/actions/workstream-ci/dagger/package.json",
           ".github/actions/workstream-ci/dagger/tsconfig.json",
-          ".github/actions/workstream-ci/dagger/src/index.ts",
+          ".github/actions/workstream-ci/dagger/src/*.ts",
+          ".github/actions/workstream-ci/dagger/test/*.mjs",
           "workstreams/pi-extension/index.ts",
           "workstreams/**/*.{json,yml}",
           "renovate.json",
+          "renovate/*.json",
+        ])
+        .withExec([
+          "node",
+          "--test",
+          ".github/actions/workstream-ci/dagger/test/*.test.mjs",
         ])
         .sync(),
     ]);
@@ -470,13 +546,15 @@ export class WorkstreamCi {
     stage: string,
     commitSha: string,
     changedFilesB64 = "",
+    lane = "",
   ): Promise<string> {
     if (
       !CATEGORIES.has(category) ||
       !STAGES.has(stage) ||
-      !SHA.test(commitSha)
+      !SHA.test(commitSha) ||
+      !LANES.has(lane)
     ) {
-      throw new Error("invalid category, stage, or commit SHA");
+      throw new Error("invalid category, stage, commit SHA, or lane");
     }
     const project = await this.project(contract, category);
     if (stage === "pull-request") {
@@ -488,8 +566,18 @@ export class WorkstreamCi {
       }
     }
     const files = stage === "full" ? [] : changedFiles(changedFilesB64);
+    // Record and Emergency changes get the secret scan only. An emergency
+    // change's own lane runs in full after the merge.
+    if (stage === "pull-request" && (lane === "0" || lane === "E")) {
+      await this.trivy(source, project, undefined, true);
+      return `${project.name}: lane ${lane} secret scan passed`;
+    }
+    // Stateful and Platform changes run every lane at full stage.
     const all =
-      stage === "full" || matches(files, project.ci.fullOnPaths ?? []);
+      stage === "full" ||
+      lane === "3" ||
+      lane === "4" ||
+      matches(files, project.ci.fullOnPaths ?? []);
     const noNative =
       !all &&
       files.length > 0 &&
@@ -508,7 +596,11 @@ export class WorkstreamCi {
     const effectiveStage = all ? "full" : stage;
     const laneStage = (lane: Lane) =>
       all || matches(files, lane.fullOnPaths ?? []) ? "full" : stage;
-    await this.trivy(source, project);
+    await this.trivy(
+      source,
+      project,
+      stage === "pull-request" ? contract : undefined,
+    );
     // Keep a bounded per-job fan-out: the runner capacity contract admits two
     // concurrent Dagger jobs, and each job may run two independent lanes. Rust
     // lanes remain memory-bounded by CARGO_BUILD_JOBS=1 in lane().
