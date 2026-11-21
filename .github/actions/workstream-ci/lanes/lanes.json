@@ -78,10 +78,17 @@
       "mise.toml"
     ],
     "platform": [
-      ".github/**",
       "ansible/**",
       "opentofu/**",
       "policy/**",
+      "**/firewall/**",
+      "**/Caddyfile",
+      "**/*.tf",
+      "**/*.tfvars",
+      "**/*.hujson"
+    ],
+    "protected": [
+      ".github/**",
       "renovate/**",
       "renovate.json",
       "project.yaml",
@@ -90,12 +97,7 @@
       "CLAUDE.md",
       "**/CLAUDE.md",
       "**/CODEOWNERS",
-      "**/trivy-baseline.json",
-      "**/firewall/**",
-      "**/Caddyfile",
-      "**/*.tf",
-      "**/*.tfvars",
-      "**/*.hujson"
+      "**/trivy-baseline.json"
     ],
     "record": [
       "*.md",
